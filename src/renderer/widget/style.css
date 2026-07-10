@@ -1,0 +1,152 @@
+body {
+  background: transparent;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* الشريط العلوي */
+.topbar {
+  background: linear-gradient(135deg, var(--brand-700), var(--brand-900));
+  color: var(--on-brand);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  flex: 1;
+}
+.brand svg { width: 20px; height: 20px; opacity: 0.95; }
+.actions { display: flex; align-items: center; gap: 2px; }
+.iconbtn {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  color: var(--on-brand-soft);
+  transition: background 0.15s, color 0.15s;
+}
+.iconbtn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+.iconbtn svg { width: 16px; height: 16px; }
+.iconbtn.active { color: var(--gold-soft); }
+
+/* مبدّل النوع */
+.segment {
+  display: flex;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 2px;
+  margin: 0 4px;
+}
+.segment button {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-brand-soft);
+  padding: 4px 9px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.segment button.active {
+  background: var(--on-brand);
+  color: var(--brand-900);
+}
+
+/* شريط التاريخ */
+.datebar {
+  padding: 12px 16px 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dates .hijri { font-size: 16px; font-weight: 700; color: var(--text); }
+.dates .greg { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.city {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 600;
+  color: var(--brand-700);
+  background: var(--highlight);
+  padding: 5px 10px; border-radius: 999px;
+}
+.theme-dark .city { color: #7fd6ab; }
+.city svg { width: 13px; height: 13px; }
+
+/* المحتوى */
+.content { padding: 6px 16px 14px; }
+
+/* وضع أقرب صلاة */
+.next-wrap { text-align: center; padding: 10px 0 6px; }
+.next-label { font-size: 13px; color: var(--text-soft); }
+.next-name {
+  font-size: 34px; font-weight: 700; color: var(--brand-700);
+  margin: 2px 0 0; line-height: 1.15;
+}
+.theme-dark .next-name { color: #63d7a6; }
+.next-time { font-size: 17px; color: var(--text); margin-top: 2px; }
+.next-time .tag {
+  font-size: 11px; color: var(--gold); font-weight: 700;
+  margin-inline-start: 6px;
+}
+.countdown {
+  margin-top: 12px;
+  font-size: 30px; font-weight: 700; letter-spacing: 1px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+.countdown-words { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+
+/* وضع كل الصلوات */
+.prayer-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.prow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.prow .pname { color: var(--text); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.prow .pname .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+.prow .ptime { color: var(--text-soft); font-weight: 600; font-variant-numeric: tabular-nums; }
+.prow.is-next { background: var(--highlight-strong); }
+.prow.is-next .pname { color: var(--brand-700); }
+.theme-dark .prow.is-next .pname { color: #63d7a6; }
+.prow.is-next .pname .dot { background: var(--brand-600); }
+.prow.is-next .ptime { color: var(--brand-700); }
+.theme-dark .prow.is-next .ptime { color: #63d7a6; }
+.prow.is-current { background: var(--highlight); }
+.prow.sunrise { opacity: 0.75; }
+.prow.sunrise .pname { font-weight: 500; }
+.prow .next-badge {
+  font-size: 10px; font-weight: 700; color: #fff;
+  background: var(--brand-600); border-radius: 999px; padding: 2px 7px;
+}
+
+/* شريط الحالة */
+.statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-soft);
+  background: var(--surface-2);
+}
+.conn { display: inline-flex; align-items: center; gap: 5px; }
+.conn .cdot { width: 7px; height: 7px; border-radius: 50%; background: #9aa7a0; }
+.conn.online .cdot { background: #23a065; }
+.conn.offline .cdot { background: #c0603a; }
+.statusbar .refresh { display: inline-flex; align-items: center; gap: 4px; color: var(--text-soft); }
+.statusbar .refresh:hover { color: var(--brand-700); }
+.statusbar .refresh svg { width: 12px; height: 12px; }
+
+.loading { padding: 40px 16px; text-align: center; color: var(--text-soft); font-size: 14px; }

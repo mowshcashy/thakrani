@@ -1,0 +1,64 @@
+{
+  "name": "thakkerni",
+  "productName": "ذكِّرني",
+  "version": "1.0.0",
+  "description": "ودجت مواقيت الصلاة لسطح المكتب اعتمادًا على مواقيت أم القرى الرسمية",
+  "author": "MOATH ALWASHMI",
+  "license": "MIT",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "assets": "node scripts/make-assets.js",
+    "test:data": "node scripts/test-data.js",
+    "build": "npm run assets && electron-builder --win",
+    "pack": "npm run assets && electron-builder --win --dir"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.33.5"
+  },
+  "build": {
+    "appId": "com.moath.thakkerni",
+    "productName": "ذكِّرني",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "assets/audio/**",
+      "node_modules/adhan/**"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icons/app.ico",
+      "executableName": "Thakkerni"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "shortcutName": "ذكِّرني",
+      "artifactName": "Thakkerni-Setup-${version}.${ext}"
+    }
+  },
+  "dependencies": {
+    "adhan": "^4.4.4"
+  }
+}

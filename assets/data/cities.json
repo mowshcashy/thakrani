@@ -1,0 +1,2144 @@
+[
+
+  {
+
+    "id": 1001,
+
+    "latitude": 24.67,
+
+    "longitude": 46.69,
+
+    "name_en": "Riyadh",
+
+    "name_ar": "الرياض",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1002,
+
+    "latitude": 21.426666,
+
+    "longitude": 39.831666,
+
+    "name_en": "Mecca",
+
+    "name_ar": "مكة المكرمة",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1003,
+
+    "latitude": 24.54,
+
+    "longitude": 39.63,
+
+    "name_en": "Medina",
+
+    "name_ar": "المدينة المنورة",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1004,
+
+    "latitude": 26.35,
+
+    "longitude": 43.96,
+
+    "name_en": "Buraydah",
+
+    "name_ar": "بريدة",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1005,
+
+    "latitude": 26.44,
+
+    "longitude": 50.1,
+
+    "name_en": "Dammam",
+
+    "name_ar": "الدمام",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1006,
+
+    "latitude": 18.22,
+
+    "longitude": 42.51,
+
+    "name_en": "Abha",
+
+    "name_ar": "أبها",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1007,
+
+    "latitude": 28.4,
+
+    "longitude": 36.58,
+
+    "name_en": "Tabuk",
+
+    "name_ar": "تبوك",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1008,
+
+    "latitude": 27.52,
+
+    "longitude": 41.7,
+
+    "name_en": "Hail",
+
+    "name_ar": "حائل",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1009,
+
+    "latitude": 30.99,
+
+    "longitude": 41.02,
+
+    "name_en": "Arar",
+
+    "name_ar": "عرعر",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1010,
+
+    "latitude": 16.89,
+
+    "longitude": 42.54,
+
+    "name_en": "Jazan",
+
+    "name_ar": "جازان",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1011,
+
+    "latitude": 17.52,
+
+    "longitude": 44.2,
+
+    "name_en": "Najran",
+
+    "name_ar": "نجران",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1012,
+
+    "latitude": 20.01,
+
+    "longitude": 41.47,
+
+    "name_en": "Al Bahah",
+
+    "name_ar": "الباحة",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 1013,
+
+    "latitude": 29.97,
+
+    "longitude": 40.2,
+
+    "name_en": "Sakaka",
+
+    "name_ar": "سكاكا",
+
+    "type": "region",
+
+    "parent_id": null
+
+  },
+
+  {
+
+    "id": 2,
+
+    "latitude": 25.93,
+
+    "longitude": 49.66,
+
+    "name_en": "Abqaiq",
+
+    "name_ar": "بقيق",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 3,
+
+    "latitude": 16.97,
+
+    "longitude": 42.83,
+
+    "name_en": "Abu Arish",
+
+    "name_ar": "أبو عريش",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 4,
+
+    "latitude": 24.74,
+
+    "longitude": 46.58,
+
+    "name_en": "Ad Diriyah",
+
+    "name_ar": "الدرعية",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 5,
+
+    "latitude": 23.91,
+
+    "longitude": 42.92,
+
+    "name_en": "Afif",
+
+    "name_ar": "عفيف",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 6,
+
+    "latitude": 16.7,
+
+    "longitude": 42.95,
+
+    "name_en": "Ahad Al Masarihah",
+
+    "name_ar": "أحد المسارحة",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 7,
+
+    "latitude": 18.17,
+
+    "longitude": 42.84,
+
+    "name_en": "Ahad Rafidah",
+
+    "name_ar": "أحد رفيدة",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 8,
+
+    "latitude": 27.56,
+
+    "longitude": 47.7,
+
+    "name_en": "Qaryat Al Ulya",
+
+    "name_ar": "قرية العليا",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 9,
+
+    "latitude": 22.22,
+
+    "longitude": 46.656,
+
+    "name_en": "Al Aflaj",
+
+    "name_ar": "الأفلاج",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 10,
+
+    "latitude": 25.408,
+
+    "longitude": 49.6132,
+
+    "name_en": "Al Hofuf",
+
+    "name_ar": "الهفوف",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 11,
+
+    "latitude": 17.24,
+
+    "longitude": 42.95,
+
+    "name_en": "Al Edabi",
+
+    "name_ar": "العيدابي",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 12,
+
+    "latitude": 20.27,
+
+    "longitude": 41.66,
+
+    "name_en": "Al Aqiq",
+
+    "name_ar": "العقيق",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 13,
+
+    "latitude": 17.04,
+
+    "longitude": 43.09,
+
+    "name_en": "Al Aridhah",
+
+    "name_ar": "العارضة",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 14,
+
+    "latitude": 26.77,
+
+    "longitude": 44.22,
+
+    "name_en": "Alasyah",
+
+    "name_ar": "الأسياح",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 15,
+
+    "latitude": 26.0,
+
+    "longitude": 43.73,
+
+    "name_en": "Al Badayea",
+
+    "name_ar": "البدائع",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 17,
+
+    "latitude": 26.15,
+
+    "longitude": 43.67,
+
+    "name_en": "Al Bukayriyah",
+
+    "name_ar": "البكيرية",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 18,
+
+    "latitude": 17.34,
+
+    "longitude": 43.14,
+
+    "name_en": "Addayer",
+
+    "name_ar": "الدائر",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 19,
+
+    "latitude": 26.03,
+
+    "longitude": 44.95,
+
+    "name_en": "Al Ghat",
+
+    "name_ar": "الغاط",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 20,
+
+    "latitude": 26.79,
+
+    "longitude": 41.32,
+
+    "name_en": "Al Ghazalah",
+
+    "name_ar": "الغزالة",
+
+    "type": "governorate",
+
+    "parent_id": 1008
+
+  },
+
+  {
+
+    "id": 21,
+
+    "latitude": 31.33,
+
+    "longitude": 37.34,
+
+    "name_en": "Al Qurayyat",
+
+    "name_ar": "القريات",
+
+    "type": "governorate",
+
+    "parent_id": 1013
+
+  },
+
+  {
+
+    "id": 22,
+
+    "latitude": 24.05,
+
+    "longitude": 45.25,
+
+    "name_en": "Al Quwaiiyah",
+
+    "name_ar": "القويعية",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 23,
+
+    "latitude": 23.62,
+
+    "longitude": 46.52,
+
+    "name_en": "Al Hariq",
+
+    "name_ar": "الحريق",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 24,
+
+    "latitude": 16.78,
+
+    "longitude": 43.22,
+
+    "name_en": "Alharth",
+
+    "name_ar": "الحرث",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 25,
+
+    "latitude": 24.88,
+
+    "longitude": 40.52,
+
+    "name_en": "Al Henakiyah",
+
+    "name_ar": "الحناكية",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 26,
+
+    "latitude": 21.63,
+
+    "longitude": 39.7,
+
+    "name_en": "Al Jumum",
+
+    "name_ar": "الجموم",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 27,
+
+    "latitude": 22.26,
+
+    "longitude": 39.79,
+
+    "name_en": "Al Kamil",
+
+    "name_ar": "الكامل",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 28,
+
+    "latitude": 24.15,
+
+    "longitude": 47.32,
+
+    "name_en": "Al Kharj",
+
+    "name_ar": "الخرج",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 29,
+
+    "latitude": 21.91,
+
+    "longitude": 42.02,
+
+    "name_en": "Al Khurma",
+
+    "name_ar": "الخرمة",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 30,
+
+    "latitude": 20.15,
+
+    "longitude": 40.28,
+
+    "name_en": "Al Lith",
+
+    "name_ar": "الليث",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 31,
+
+    "latitude": 23.52,
+
+    "longitude": 40.89,
+
+    "name_en": "Mahd Al Thahab",
+
+    "name_ar": "مهد الذهب",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 32,
+
+    "latitude": 19.78,
+
+    "longitude": 41.43,
+
+    "name_en": "Al Makhwah",
+
+    "name_ar": "المخواة",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 33,
+
+    "latitude": 25.87,
+
+    "longitude": 44.21,
+
+    "name_en": "Al Mithnab",
+
+    "name_ar": "المذنب",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 34,
+
+    "latitude": 19.13,
+
+    "longitude": 41.93,
+
+    "name_en": "Almajaridah",
+
+    "name_ar": "المجاردة",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 35,
+
+    "latitude": 20.16,
+
+    "longitude": 41.29,
+
+    "name_en": "Almandaq",
+
+    "name_ar": "المندق",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 36,
+
+    "latitude": 19.14,
+
+    "longitude": 42.14,
+
+    "name_en": "Al Namas",
+
+    "name_ar": "النماص",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 37,
+
+    "latitude": 27.47,
+
+    "longitude": 48.47,
+
+    "name_en": "Nairyah",
+
+    "name_ar": "النعيرية",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 38,
+
+    "latitude": 26.55,
+
+    "longitude": 37.96,
+
+    "name_en": "Al Ula",
+
+    "name_ar": "العلا",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 39,
+
+    "latitude": 17.71,
+
+    "longitude": 42.09,
+
+    "name_en": "Aldarb",
+
+    "name_ar": "الدرب",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 40,
+
+    "latitude": 20.25,
+
+    "longitude": 41.36,
+
+    "name_en": "Alqura",
+
+    "name_ar": "القرى",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 41,
+
+    "latitude": 17.6,
+
+    "longitude": 42.86,
+
+    "name_en": "Al Reeth",
+
+    "name_ar": "الريث",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 42,
+
+    "latitude": 25.86,
+
+    "longitude": 43.48,
+
+    "name_en": "Ar Rass",
+
+    "name_ar": "الرس",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 43,
+
+    "latitude": 27.17,
+
+    "longitude": 42.44,
+
+    "name_en": "Ash Shinan",
+
+    "name_ar": "الشنان",
+
+    "type": "governorate",
+
+    "parent_id": 1008
+
+  },
+
+  {
+
+    "id": 44,
+
+    "latitude": 26.23,
+
+    "longitude": 36.47,
+
+    "name_en": "Al Wajh",
+
+    "name_ar": "الوجه",
+
+    "type": "governorate",
+
+    "parent_id": 1007
+
+  },
+
+  {
+
+    "id": 45,
+
+    "latitude": 25.03,
+
+    "longitude": 37.26,
+
+    "name_en": "Umluj",
+
+    "name_ar": "أملج",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 46,
+
+    "latitude": 25.94,
+
+    "longitude": 42.95,
+
+    "name_en": "An Nabhaniyah",
+
+    "name_ar": "النبهانية",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 48,
+
+    "latitude": 20.47,
+
+    "longitude": 45.57,
+
+    "name_en": "As Sulayyil",
+
+    "name_ar": "السليل",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 49,
+
+    "latitude": 26.3,
+
+    "longitude": 44.82,
+
+    "name_en": "Az Zulfi",
+
+    "name_ar": "الزلفي",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 50,
+
+    "latitude": 23.78,
+
+    "longitude": 38.8,
+
+    "name_en": "Badr",
+
+    "name_ar": "بدر",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 51,
+
+    "latitude": 17.88,
+
+    "longitude": 43.72,
+
+    "name_en": "Badr Al Janoub",
+
+    "name_ar": "بدر الجنوب",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 52,
+
+    "latitude": 17.378,
+
+    "longitude": 42.538,
+
+    "name_en": "Baish",
+
+    "name_ar": "بيش",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 53,
+
+    "latitude": 19.86,
+
+    "longitude": 41.57,
+
+    "name_en": "Baljurashi",
+
+    "name_ar": "بلجرشي",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 54,
+
+    "latitude": 27.9,
+
+    "longitude": 42.4,
+
+    "name_en": "Baqaa",
+
+    "name_ar": "بقعاء",
+
+    "type": "governorate",
+
+    "parent_id": 1008
+
+  },
+
+  {
+
+    "id": 55,
+
+    "latitude": 19.57,
+
+    "longitude": 41.96,
+
+    "name_en": "Belqarn",
+
+    "name_ar": "بلقرن",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 56,
+
+    "latitude": 20.0,
+
+    "longitude": 42.6,
+
+    "name_en": "Bishah",
+
+    "name_ar": "بيشة",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 59,
+
+    "latitude": 27.35,
+
+    "longitude": 35.69,
+
+    "name_en": "Duba",
+
+    "name_ar": "ضباء",
+
+    "type": "governorate",
+
+    "parent_id": 1007
+
+  },
+
+  {
+
+    "id": 60,
+
+    "latitude": 17.69,
+
+    "longitude": 43.51,
+
+    "name_en": "Dhahran Al Janub",
+
+    "name_ar": "ظهران الجنوب",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 61,
+
+    "latitude": 17.1,
+
+    "longitude": 42.78,
+
+    "name_en": "Damad",
+
+    "name_ar": "ضمد",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 62,
+
+    "latitude": 24.6,
+
+    "longitude": 46.13,
+
+    "name_en": "Dhurma",
+
+    "name_ar": "ضرماء",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 63,
+
+    "latitude": 29.81,
+
+    "longitude": 39.87,
+
+    "name_en": "Dumah Al Jandal",
+
+    "name_ar": "دومة الجندل",
+
+    "type": "governorate",
+
+    "parent_id": 1013
+
+  },
+
+  {
+
+    "id": 64,
+
+    "latitude": 24.5,
+
+    "longitude": 44.38,
+
+    "name_en": "Al Duwadimi",
+
+    "name_ar": "الدوادمي",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 65,
+
+    "latitude": 16.71,
+
+    "longitude": 42.12,
+
+    "name_en": "Farasan Island",
+
+    "name_ar": "جزر فرسان",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 66,
+
+    "latitude": 19.13,
+
+    "longitude": 41.08,
+
+    "name_en": "Al Qunfudhah",
+
+    "name_ar": "القنفذة",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 67,
+
+    "latitude": 17.85,
+
+    "longitude": 43.02,
+
+    "name_en": "Hubuna",
+
+    "name_ar": "حبونا",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 68,
+
+    "latitude": 28.4,
+
+    "longitude": 45.97,
+
+    "name_en": "Hafar Al Batin",
+
+    "name_ar": "حفر الباطن",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 70,
+
+    "latitude": 29.3,
+
+    "longitude": 34.95,
+
+    "name_en": "Haql",
+
+    "name_ar": "حقل",
+
+    "type": "governorate",
+
+    "parent_id": 1007
+
+  },
+
+  {
+
+    "id": 71,
+
+    "latitude": 23.49,
+
+    "longitude": 46.86,
+
+    "name_en": "Howtat Bani Tamim",
+
+    "name_ar": "حوطة بني تميم",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 72,
+
+    "latitude": 25.11,
+
+    "longitude": 46.1,
+
+    "name_en": "Huraymila",
+
+    "name_ar": "حريملاء",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 74,
+
+    "latitude": 21.5,
+
+    "longitude": 39.17,
+
+    "name_en": "Jeddah",
+
+    "name_ar": "جدة",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 75,
+
+    "latitude": 27.0,
+
+    "longitude": 49.66,
+
+    "name_en": "Al Jubail",
+
+    "name_ar": "الجبيل",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 76,
+
+    "latitude": 28.42,
+
+    "longitude": 48.49,
+
+    "name_en": "Khafji",
+
+    "name_ar": "الخفجي",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 77,
+
+    "latitude": 25.71,
+
+    "longitude": 39.28,
+
+    "name_en": "Khaybar",
+
+    "name_ar": "خيبر",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  },
+
+  {
+
+    "id": 78,
+
+    "latitude": 18.31,
+
+    "longitude": 42.73,
+
+    "name_en": "Khamis Mushait",
+
+    "name_ar": "خميس مشيط",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 79,
+
+    "latitude": 18.85,
+
+    "longitude": 51.819,
+
+    "name_en": "Al Kharkhir",
+
+    "name_ar": "الخرخير",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 80,
+
+    "latitude": 26.26,
+
+    "longitude": 50.21,
+
+    "name_en": "Al Khobar",
+
+    "name_ar": "الخبر",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 81,
+
+    "latitude": 17.6,
+
+    "longitude": 45.066,
+
+    "name_en": "Khbash",
+
+    "name_ar": "خباش",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 82,
+
+    "latitude": 22.11,
+
+    "longitude": 39.31,
+
+    "name_en": "Khulais",
+
+    "name_ar": "خليص",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 84,
+
+    "latitude": 18.54,
+
+    "longitude": 42.05,
+
+    "name_en": "Muhayil",
+
+    "name_ar": "محايل عسير",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 85,
+
+    "latitude": 25.9,
+
+    "longitude": 45.34,
+
+    "name_en": "Al Majmaah",
+
+    "name_ar": "المجمعة",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 87,
+
+    "latitude": 24.48,
+
+    "longitude": 46.29,
+
+    "name_en": "Al Muzahimiyah",
+
+    "name_ar": "المزاحمية",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 89,
+
+    "latitude": 26.09,
+
+    "longitude": 43.97,
+
+    "name_en": "Unayzah",
+
+    "name_ar": "عنيزة",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 90,
+
+    "latitude": 26.51,
+
+    "longitude": 43.62,
+
+    "name_en": "Uyun Al Jawa",
+
+    "name_ar": "عيون الجواء",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 91,
+
+    "latitude": 26.56,
+
+    "longitude": 50.0,
+
+    "name_en": "Al Qatif",
+
+    "name_ar": "القطيف",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 92,
+
+    "latitude": 19.95,
+
+    "longitude": 41.24,
+
+    "name_en": "Qilwah",
+
+    "name_ar": "قلوة",
+
+    "type": "governorate",
+
+    "parent_id": 1012
+
+  },
+
+  {
+
+    "id": 93,
+
+    "latitude": 22.79,
+
+    "longitude": 39.03,
+
+    "name_en": "Rabigh",
+
+    "name_ar": "رابغ",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 94,
+
+    "latitude": 29.63,
+
+    "longitude": 43.5,
+
+    "name_en": "Rafha",
+
+    "name_ar": "رفحاء",
+
+    "type": "governorate",
+
+    "parent_id": 1009
+
+  },
+
+  {
+
+    "id": 95,
+
+    "latitude": 25.56,
+
+    "longitude": 47.17,
+
+    "name_en": "Rumah",
+
+    "name_ar": "رماح",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 96,
+
+    "latitude": 21.28,
+
+    "longitude": 42.82,
+
+    "name_en": "Ranyah",
+
+    "name_ar": "رنية",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 97,
+
+    "latitude": 26.71,
+
+    "longitude": 50.07,
+
+    "name_en": "Ras Tanura",
+
+    "name_ar": "رأس تنورة",
+
+    "type": "governorate",
+
+    "parent_id": 1005
+
+  },
+
+  {
+
+    "id": 98,
+
+    "latitude": 18.23,
+
+    "longitude": 42.28,
+
+    "name_en": "Rojal",
+
+    "name_ar": "رجال ألمع",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 100,
+
+    "latitude": 26.04,
+
+    "longitude": 43.55,
+
+    "name_en": "Riyadh Al Khabra",
+
+    "name_ar": "رياض الخبراء",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 101,
+
+    "latitude": 17.15,
+
+    "longitude": 42.62,
+
+    "name_en": "Sabya",
+
+    "name_ar": "صبيا",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 103,
+
+    "latitude": 16.59,
+
+    "longitude": 42.94,
+
+    "name_en": "Samtah",
+
+    "name_ar": "صامطة",
+
+    "type": "governorate",
+
+    "parent_id": 1010
+
+  },
+
+  {
+
+    "id": 104,
+
+    "latitude": 18.08,
+
+    "longitude": 43.14,
+
+    "name_en": "Sarat Abidah",
+
+    "name_ar": "سراة عبيدة",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 105,
+
+    "latitude": 25.26,
+
+    "longitude": 45.26,
+
+    "name_en": "Shagra",
+
+    "name_ar": "شقراء",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 106,
+
+    "latitude": 17.49,
+
+    "longitude": 47.11,
+
+    "name_en": "Sharorah",
+
+    "name_ar": "شرورة",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 107,
+
+    "latitude": 26.32,
+
+    "longitude": 44.26,
+
+    "name_en": "Ash Shimasiyah",
+
+    "name_ar": "الشماسية",
+
+    "type": "governorate",
+
+    "parent_id": 1004
+
+  },
+
+  {
+
+    "id": 109,
+
+    "latitude": 21.25,
+
+    "longitude": 40.4,
+
+    "name_en": "Taif",
+
+    "name_ar": "الطائف",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 110,
+
+    "latitude": 19.55,
+
+    "longitude": 43.52,
+
+    "name_en": "Tathleeth",
+
+    "name_ar": "تثليث",
+
+    "type": "governorate",
+
+    "parent_id": 1006
+
+  },
+
+  {
+
+    "id": 111,
+
+    "latitude": 28.63,
+
+    "longitude": 38.55,
+
+    "name_en": "Tayma",
+
+    "name_ar": "تيماء",
+
+    "type": "governorate",
+
+    "parent_id": 1007
+
+  },
+
+  {
+
+    "id": 112,
+
+    "latitude": 25.28,
+
+    "longitude": 45.86,
+
+    "name_en": "Thadig",
+
+    "name_ar": "ثادق",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 113,
+
+    "latitude": 17.97,
+
+    "longitude": 44.11,
+
+    "name_en": "Thar",
+
+    "name_ar": "ثار",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 114,
+
+    "latitude": 21.23,
+
+    "longitude": 41.65,
+
+    "name_en": "Turbah",
+
+    "name_ar": "تربة",
+
+    "type": "governorate",
+
+    "parent_id": 1002
+
+  },
+
+  {
+
+    "id": 115,
+
+    "latitude": 31.68,
+
+    "longitude": 38.66,
+
+    "name_en": "Turaif",
+
+    "name_ar": "طريف",
+
+    "type": "governorate",
+
+    "parent_id": 1009
+
+  },
+
+  {
+
+    "id": 116,
+
+    "latitude": 20.4722,
+
+    "longitude": 44.783,
+
+    "name_en": "Wadi ad-Dawasir",
+
+    "name_ar": "وادي الدواسر",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+  {
+
+    "id": 150,
+
+    "latitude": 24.411025,
+
+    "longitude": 46.842113,
+
+    "name_en": "Al Hayr",
+
+    "name_ar": "الحائر",
+
+    "type": "governorate",
+
+    "parent_id": 1001
+
+  },
+
+  {
+
+    "id": 117,
+
+    "latitude": 18.53,
+
+    "longitude": 44.21,
+
+    "name_en": "Yadamah",
+
+    "name_ar": "يدمة",
+
+    "type": "governorate",
+
+    "parent_id": 1011
+
+  },
+
+  {
+
+    "id": 118,
+
+    "latitude": 24.09,
+
+    "longitude": 38.07,
+
+    "name_en": "Yanbu",
+
+    "name_ar": "ينبع",
+
+    "type": "governorate",
+
+    "parent_id": 1003
+
+  }
+
+]

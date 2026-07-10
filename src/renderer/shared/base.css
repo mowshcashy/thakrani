@@ -1,0 +1,58 @@
+/* متغيّرات الثيم والأساسيات المشتركة */
+:root {
+  --brand-900: #073a26;
+  --brand-800: #0a4d31;
+  --brand-700: #0e6b45;
+  --brand-600: #12805a;
+  --gold: #c8a86b;
+  --gold-soft: #e8d6ac;
+
+  --bg: #f4f6f4;
+  --surface: #ffffff;
+  --surface-2: #f0f3f0;
+  --text: #14261d;
+  --text-soft: #5b6b62;
+  --border: rgba(16, 24, 40, 0.10);
+  --shadow: 0 18px 40px -12px rgba(7, 58, 38, 0.45), 0 6px 14px -6px rgba(0, 0, 0, 0.2);
+  --highlight: rgba(14, 107, 69, 0.10);
+  --highlight-strong: rgba(14, 107, 69, 0.16);
+
+  --on-brand: #ffffff;
+  --on-brand-soft: rgba(255, 255, 255, 0.78);
+}
+
+.theme-dark {
+  --bg: #0b1712;
+  --surface: #10231a;
+  --surface-2: #16311f;
+  --text: #eaf3ee;
+  --text-soft: #9fb6aa;
+  --border: rgba(255, 255, 255, 0.10);
+  --shadow: 0 18px 44px -12px rgba(0, 0, 0, 0.7), 0 6px 14px -6px rgba(0, 0, 0, 0.5);
+  --highlight: rgba(45, 168, 118, 0.16);
+  --highlight-strong: rgba(45, 168, 118, 0.26);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+  font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  cursor: default;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+.no-drag { -webkit-app-region: no-drag; }
+.drag { -webkit-app-region: drag; }
