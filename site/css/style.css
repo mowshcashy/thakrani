@@ -449,12 +449,8 @@ img { max-width: 100%; }
 
 /* ─── اللقطات ─── */
 .shots { padding-block: 40px 110px; }
-.shots-row {
-  display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: 34px;
-  align-items: start;
-}
+.shots-row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 34px; align-items: start; }
+.shots-row-app { margin-top: 34px; }
 .shot-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -462,110 +458,241 @@ img { max-width: 100%; }
   padding: 20px;
   box-shadow: var(--card-shadow);
   transition: transform .45s var(--ease), box-shadow .45s var(--ease);
+  margin: 0;
 }
 .shot-card:hover { transform: translateY(-8px) rotate(.4deg); }
 .shot-card > div { border-radius: 14px; overflow: hidden; }
 .shot-card img { border-radius: 14px; display: block; width: 100%; }
 .shot-cap { font-size: 14px; color: var(--ink-soft); margin-top: 14px; text-align: center; }
-.shots-side { display: flex; flex-direction: column; gap: 34px; }
-.shot-mini { padding: 26px; display: grid; place-items: center; background: linear-gradient(135deg, var(--paper-deep), var(--card)); }
-.shot-mini > div { width: 100%; max-width: 300px; }
+.shot-mini-app {
+  padding: 34px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(14, 107, 69, .18), transparent 40%),
+    linear-gradient(135deg, var(--paper-deep), var(--card));
+}
 
-/* ─── معاينة ودجتات التطبيق ─── */
-.demo-widget {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 22px;
+/* ─── معاينة التطبيق الحقيقي ─── */
+.app-widget {
+  --app-surface: #ffffff;
+  --app-surface-2: #f0f3f0;
+  --app-text: #14261d;
+  --app-text-soft: #5b6b62;
+  --app-border: rgba(16, 24, 40, .10);
+  --app-brand-700: #0e6b45;
+  --app-brand-900: #073a26;
+  --app-brand-600: #12805a;
+  --app-highlight: rgba(14, 107, 69, .10);
+  --app-highlight-strong: rgba(14, 107, 69, .16);
+  --app-gold: #c8a86b;
+  --app-on-brand: #fff;
+  --app-on-brand-soft: rgba(255, 255, 255, .78);
+  --app-shadow: 0 18px 40px -12px rgba(7, 58, 38, .45), 0 6px 14px -6px rgba(0, 0, 0, .2);
+
+  background: var(--app-surface);
+  color: var(--app-text);
+  border-radius: 20px;
+  box-shadow: var(--app-shadow);
+  border: 1px solid var(--app-border);
+  overflow: hidden;
+  font-family: 'Thmanyah Sans', 'Segoe UI', Tahoma, sans-serif;
   direction: rtl;
-  font-family: 'Thmanyah Sans', sans-serif;
-  color: var(--ink);
+  text-align: right;
+  line-height: 1.5;
+}
+[data-theme="dark"] .app-widget {
+  --app-surface: #10231a;
+  --app-surface-2: #16311f;
+  --app-text: #eaf3ee;
+  --app-text-soft: #9fb6aa;
+  --app-border: rgba(255, 255, 255, .10);
+  --app-highlight: rgba(45, 168, 118, .16);
+  --app-highlight-strong: rgba(45, 168, 118, .26);
 }
 
-/* وضع كل الصلوات */
-.demo-widget-all { display: flex; flex-direction: column; gap: 16px; }
-.demo-all-head {
+/* الشريط العلوي */
+.app-topbar {
+  background: linear-gradient(135deg, var(--app-brand-700), var(--app-brand-900));
+  color: var(--app-on-brand);
+  padding: 10px 14px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding-bottom: 14px;
-  border-bottom: 1px dashed var(--line);
+  gap: 8px;
 }
-.demo-all-city { font-weight: 700; font-size: 15px; color: var(--green); }
-.demo-all-date { font-size: 12px; color: var(--ink-faint); }
-.demo-all-list { display: flex; flex-direction: column; gap: 8px; }
-.demo-all-row {
+.app-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; flex: 1; }
+.app-brand img { width: 22px; height: 21px; object-fit: contain; }
+.app-segment {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
+  background: rgba(255, 255, 255, .12);
   border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink-soft);
+  padding: 2px;
+  margin: 0 4px;
 }
-.demo-all-row.is-next {
-  background: var(--green-soft);
-  color: var(--green);
-  font-weight: 700;
-  box-shadow: 0 0 0 1px var(--green) inset;
+.app-segment button {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-on-brand-soft);
+  padding: 4px 9px;
+  border-radius: 8px;
+  white-space: nowrap;
+  border: none;
+  background: none;
 }
-.demo-all-row span:last-child { direction: ltr; font-variant-numeric: tabular-nums; }
+.app-segment button.active { background: var(--app-on-brand); color: var(--app-brand-900); }
+.app-actions { display: flex; align-items: center; gap: 2px; }
+.app-iconbtn {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  color: var(--app-on-brand-soft);
+  transition: background .15s, color .15s;
+  border: none;
+  background: none;
+  padding: 0;
+}
+.app-iconbtn:hover { background: rgba(255, 255, 255, .16); color: #fff; }
+.app-iconbtn svg { width: 16px; height: 16px; }
+.app-iconbtn.active { color: var(--app-gold); }
+
+/* شريط التاريخ */
+.app-datebar {
+  padding: 12px 16px 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--app-surface);
+}
+.app-hijri { font-family: 'Thmanyah Display', 'Thmanyah Sans', serif; font-size: 17px; font-weight: 700; color: var(--app-text); }
+.app-greg { font-size: 12px; color: var(--app-text-soft); margin-top: 2px; }
+.app-city {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 600;
+  color: var(--app-brand-700);
+  background: var(--app-highlight);
+  padding: 5px 10px; border-radius: 999px;
+  border: none;
+}
+[data-theme="dark"] .app-city { color: #7fd6ab; }
+.app-city svg { width: 13px; height: 13px; }
+
+/* المحتوى */
+.app-content { padding: 6px 16px 14px; background: var(--app-surface); }
 
 /* وضع أقرب صلاة */
-.demo-widget-next {
-  text-align: center;
-  padding: 34px 28px;
-  background: linear-gradient(180deg, var(--card) 60%, var(--green-soft));
+.app-content-next { padding: 10px 16px 18px; }
+.app-next-wrap { text-align: center; padding: 10px 0 6px; }
+.app-next-label { font-size: 13px; color: var(--app-text-soft); }
+.app-next-name {
+  font-family: 'Thmanyah Display', 'Thmanyah Sans', serif;
+  font-size: 36px; font-weight: 700;
+  color: var(--app-brand-700);
+  margin: 2px 0 0; line-height: 1.2;
 }
-.demo-next-label { font-size: 13px; color: var(--ink-faint); margin-bottom: 6px; }
-.demo-next-name {
-  font-family: 'Thmanyah Display', serif;
-  font-size: 52px;
-  font-weight: 700;
-  color: var(--green);
-  line-height: 1.2;
-}
-.demo-next-time { font-size: 17px; color: var(--ink-soft); margin-top: 4px; }
-.demo-next-count {
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--ink);
-  direction: ltr;
+[data-theme="dark"] .app-next-name { color: #63d7a6; }
+.app-next-time { font-size: 17px; color: var(--app-text); margin-top: 2px; }
+.app-countdown {
+  margin-top: 12px;
+  font-size: 30px; font-weight: 700; letter-spacing: 1px;
+  color: var(--app-text);
   font-variant-numeric: tabular-nums;
-  margin-top: 14px;
-  letter-spacing: 2px;
+  direction: ltr;
 }
-.demo-next-words { font-size: 13px; color: var(--ink-faint); margin-top: 4px; }
+.app-countdown-words { font-size: 12px; color: var(--app-text-soft); margin-top: 4px; }
+
+/* وضع كل الصلوات */
+.app-prayer-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.app-prow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.app-pname { color: var(--app-text); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.app-pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--app-border); }
+.app-ptime { color: var(--app-text-soft); font-weight: 600; font-variant-numeric: tabular-nums; direction: ltr; }
+.app-prow.is-next { background: var(--app-highlight-strong); }
+.app-prow.is-next .app-pname { color: var(--app-brand-700); }
+[data-theme="dark"] .app-prow.is-next .app-pname { color: #63d7a6; }
+.app-prow.is-next .app-pdot { background: var(--app-brand-600); }
+.app-prow.is-next .app-ptime { color: var(--app-brand-700); }
+[data-theme="dark"] .app-prow.is-next .app-ptime { color: #63d7a6; }
+.app-prow.sunrise { opacity: .75; }
+.app-prow.sunrise .app-pname { font-weight: 500; }
+.app-pbadge {
+  font-size: 10px; font-weight: 700; color: #fff;
+  background: var(--app-brand-600); border-radius: 999px; padding: 2px 7px;
+}
+
+/* شريط الحالة */
+.app-statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--app-border);
+  font-size: 11px; color: var(--app-text-soft);
+  background: var(--app-surface-2);
+}
+.app-conn { display: inline-flex; align-items: center; gap: 5px; }
+.app-cdot { width: 7px; height: 7px; border-radius: 50%; background: #9aa7a0; }
+.app-conn.online .app-cdot { background: #23a065; }
+.app-conn.offline .app-cdot { background: #c0603a; }
+.app-refresh {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--app-text-soft);
+  border: none; background: none; padding: 0;
+  font-size: inherit; font-family: inherit;
+}
+.app-refresh svg { width: 12px; height: 12px; }
 
 /* الودجت المصغّرة */
-.demo-mini {
+.app-mini-wrap {
+  position: relative;
+  display: inline-block;
+}
+.app-mini {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .82);
-  border: 1px solid rgba(255, 255, 255, .5);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #12241b;
-  font-size: 13px;
-  font-weight: 500;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(9, 27, 20, .42);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: 0 8px 22px -8px rgba(0, 0, 0, .55);
+  color: #fff;
   white-space: nowrap;
+  direction: rtl;
+  font-family: 'Thmanyah Sans', 'Segoe UI', Tahoma, sans-serif;
+  line-height: 1.25;
 }
-[data-theme="dark"] .demo-mini {
-  background: rgba(12, 31, 24, .78);
-  border-color: rgba(237, 245, 239, .14);
-  color: #edf5ef;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5), 0 0 0 1px rgba(237, 245, 239, .1);
+.app-mini-crescent { width: 19px; height: 18px; opacity: .95; flex: none; object-fit: contain; }
+.app-mini-col { display: flex; flex-direction: column; }
+.app-mini-prayer { font-size: 15px; font-weight: 700; }
+.app-mini-time { font-weight: 500; opacity: .9; margin-inline-start: 6px; font-size: 13px; }
+.app-mini-sub {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; opacity: .9;
+  font-variant-numeric: tabular-nums;
 }
-.demo-mini-time { direction: ltr; font-variant-numeric: tabular-nums; }
-.demo-mini-sep { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .5; }
-.demo-mini-prayer { color: var(--green, #0b5136); font-weight: 700; }
-[data-theme="dark"] .demo-mini-prayer { color: #6ee7ab; }
+.app-mini-cd { direction: ltr; }
+.app-mini-clock {
+  margin-inline-start: auto;
+  font-size: 20px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .5px;
+  direction: ltr;
+}
+.app-mini-close {
+  position: absolute; top: -6px; inset-inline-start: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0, 0, 0, .55); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; line-height: 1;
+  border: none; padding: 0;
+}
 
 /* ─── التحميل ─── */
 .download { padding-block: 90px 110px; }
