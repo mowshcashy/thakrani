@@ -22,7 +22,7 @@ body {
 }
 .theme-dark .mini { background: rgba(6, 18, 13, 0.5); }
 
-.mini .crescent { width: 16px; height: 16px; opacity: 0.9; flex: none; color: var(--gold-soft); }
+.mini .crescent { width: 19px; height: 18px; opacity: 0.95; flex: none; object-fit: contain; }
 
 .mcol { display: flex; flex-direction: column; line-height: 1.25; }
 

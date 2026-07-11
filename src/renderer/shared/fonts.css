@@ -1,29 +1,58 @@
-/* IBM Plex Sans Arabic (مضمّن للعمل دون اتصال) */
+/* خط ثمانية — Thmanyah Sans (النص) + Thmanyah Serif Display (العناوين) */
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/thmanyahsans-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url('../../../assets/fonts/IBMPlexSansArabic-Regular.woff2') format('woff2');
+  src: url('../../../assets/fonts/thmanyahsans-Regular.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  src: url('../../../assets/fonts/IBMPlexSansArabic-Medium.woff2') format('woff2');
+  src: url('../../../assets/fonts/thmanyahsans-Medium.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  src: url('../../../assets/fonts/IBMPlexSansArabic-SemiBold.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
+  font-family: 'Thmanyah Sans';
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src: url('../../../assets/fonts/IBMPlexSansArabic-Bold.woff2') format('woff2');
+  src: url('../../../assets/fonts/thmanyahsans-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/thmanyahsans-Black.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Thmanyah Display';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/thmanyahserifdisplay-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/thmanyahserifdisplay-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/thmanyahserifdisplay-Bold.woff2') format('woff2');
 }

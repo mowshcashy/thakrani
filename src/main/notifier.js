@@ -10,7 +10,7 @@ const paths = require('./paths');
 function notifyPrayer(prayer) {
   if (!Notification.isSupported()) return;
   const title = `حان الآن وقت صلاة ${prayer.name}`;
-  const body = `${prayer.name} · ${prayer.time}${prayer.isTomorrow ? ' (غدًا)' : ''}\nذكِّرني`;
+  const body = `${prayer.name} · ${prayer.time}${prayer.isTomorrow ? ' (غدًا)' : ''}\nذكِّرني — مواقيت أم القرى`;
   let icon;
   try {
     icon = paths.asset('icons', 'app.png');

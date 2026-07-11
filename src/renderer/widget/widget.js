@@ -36,7 +36,7 @@ function render() {
 
   const header = `
     <div class="topbar drag">
-      <div class="brand">${ICON.crescent}<span>ذكِّرني</span></div>
+      <div class="brand"><img class="brand-logo" src="../../../assets/logos/tha-dark.svg" alt=""/><span>ذكِّرنـي</span></div>
       <div class="segment no-drag">
         <button data-action="mode-next" class="${mode === 'next' ? 'active' : ''}">أقرب صلاة</button>
         <button data-action="mode-all" class="${mode === 'all' ? 'active' : ''}">كل الصلوات</button>

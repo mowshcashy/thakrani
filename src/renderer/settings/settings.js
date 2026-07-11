@@ -51,9 +51,9 @@ function buildCityOptions(selected) {
 function cityDesc(selected) {
   const entry = cities.find((c) => c.name === selected);
   if (entry && entry.type !== 'region') {
-    return `محسوبة ومثبّتة على مواقيت ${esc(entry.region)}`;
+    return `محسوبة بطريقة أم القرى ومثبّتة على مواقيت ${esc(entry.region)}`;
   }
-  return 'مواقيت الصلاة الرسمية';
+  return 'مواقيت أم القرى الرسمية';
 }
 
 function render() {
@@ -158,8 +158,10 @@ function render() {
     </div>
 
     <div class="footer-note">
-      ذكِّرني · الإصدار ١٫٠ · © <a href="https://www.linkedin.com/in/moathwsh/" target="_blank" rel="noopener">MOATH ALWASHMI</a><br/>
-      MIT License
+      <img class="footer-logo when-light" src="../../../assets/logos/tha-light.svg" alt=""/>
+      <img class="footer-logo when-dark" src="../../../assets/logos/tha-dark.svg" alt=""/><br/>
+      ذكِّرنـي · الإصدار ١٫٠ · بواسطة Moath Alwashmi<br/>
+      المواقيت من التقويم الرسمي السعودي — أم القرى
     </div>`;
 }
 

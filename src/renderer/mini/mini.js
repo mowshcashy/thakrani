@@ -5,7 +5,7 @@ const root = document.getElementById('root');
 let current = null;
 
 const CRESCENT =
-  '<svg class="crescent" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 2A9.5 9.5 0 1 0 22 15.2 7.5 7.5 0 0 1 15.5 2z"/></svg>';
+  '<img class="crescent" src="../../../assets/logos/tha-dark.svg" alt=""/>';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"]/g, (c) =>

@@ -32,25 +32,37 @@
 
     function fitFont(c, text, maxWidth, startPx) {
       let px = startPx;
-      c.font = `700 ${px}px "IBM Plex Sans Arabic", "Segoe UI", sans-serif`;
+      c.font = `700 ${px}px "Thmanyah Sans", "Segoe UI", sans-serif`;
       while (c.measureText(text).width > maxWidth && px > 8) {
         px -= 1;
-        c.font = `700 ${px}px "IBM Plex Sans Arabic", "Segoe UI", sans-serif`;
+        c.font = `700 ${px}px "Thmanyah Sans", "Segoe UI", sans-serif`;
       }
       return px;
     }
 
-    function drawCrescent(c) {
-      c.save();
-      c.fillStyle = '#ffffff';
-      c.beginPath();
-      c.arc(SIZE / 2, SIZE / 2, 18, 0, Math.PI * 2);
-      c.fill();
-      c.globalCompositeOperation = 'destination-out';
-      c.beginPath();
-      c.arc(SIZE / 2 + 7, SIZE / 2 - 3, 16, 0, Math.PI * 2);
-      c.fill();
-      c.restore();
+    // شعار «ذكِّرني» الأبيض — يُرسم عند عدم وجود نص
+    const logoImg = new Image();
+    let logoReady = false;
+    logoImg.onload = () => { logoReady = true; };
+    logoImg.src = '../../../assets/logos/tha-dark.svg';
+
+    function drawLogo(c) {
+      if (logoReady) {
+        const w = 42, h = 42 * (304.82 / 325.23);
+        c.drawImage(logoImg, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+      } else {
+        // احتياط: هلال بسيط ريثما يُحمَّل الشعار
+        c.save();
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(SIZE / 2, SIZE / 2, 18, 0, Math.PI * 2);
+        c.fill();
+        c.globalCompositeOperation = 'destination-out';
+        c.beginPath();
+        c.arc(SIZE / 2 + 7, SIZE / 2 - 3, 16, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
     }
 
     function render(spec) {
@@ -66,7 +78,7 @@
 
       const text = (spec && spec.text) ? String(spec.text) : '';
       if (!text) {
-        drawCrescent(ctx);
+        drawLogo(ctx);
       } else {
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';

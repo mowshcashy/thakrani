@@ -33,7 +33,7 @@ if (!gotLock) {
 }
 
 async function init() {
-  await state.loadStatics(); // تحميل قائمة المدن ومكتبة حساب المواقيت
+  await state.loadStatics(); // تحميل قائمة المدن ومكتبة حساب أم القرى
   state.init();
 
   windows.createBackground();

@@ -105,7 +105,8 @@ function generateAdhan() {
 
 // ---------------- الأيقونات ----------------
 
-const LOGO_SVG = `
+// خلفية خضراء متدرّجة بزوايا مستديرة + شعار «ذكِّرني» الأبيض (Tha)
+const BG_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
@@ -114,31 +115,37 @@ const LOGO_SVG = `
     </linearGradient>
   </defs>
   <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bg)"/>
-  <g transform="translate(128,120)">
-    <circle cx="6" cy="0" r="58" fill="#e8d6ac"/>
-    <circle cx="30" cy="-10" r="50" fill="#0a5236"/>
-    <g fill="#e8d6ac" transform="translate(52,-40)">
-      <path d="M0,-16 L4.7,-4.9 L16,-4.9 L6.6,2 L10.5,13 L0,6 L-10.5,13 L-6.6,2 L-16,-4.9 L-4.7,-4.9 Z"/>
-    </g>
-  </g>
-  <text x="128" y="212" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="34" font-weight="700" fill="#ffffff">ذكِّرني</text>
 </svg>`;
 
 async function generateIcons() {
   const sharp = require('sharp');
   const pngToIco = require('png-to-ico');
-  const svg = Buffer.from(LOGO_SVG);
+  const LOGOS = path.join(ASSETS, 'logos');
 
-  await sharp(svg).resize(256, 256).png().toFile(path.join(ICONS, 'app.png'));
-  await sharp(svg).resize(64, 64).png().toFile(path.join(ICONS, 'tray-base.png'));
+  // شعار أبيض بعرض 176px فوق خلفية 256px
+  const logoW = 176;
+  const logoH = Math.round(logoW * (304.82 / 325.23));
+  const logoPng = await sharp(path.join(LOGOS, 'tha-dark.svg'), { density: 300 })
+    .resize(logoW, logoH)
+    .png()
+    .toBuffer();
+
+  const master = await sharp(Buffer.from(BG_SVG))
+    .resize(256, 256)
+    .composite([{ input: logoPng, left: Math.round((256 - logoW) / 2), top: Math.round((256 - logoH) / 2) }])
+    .png()
+    .toBuffer();
+
+  await sharp(master).png().toFile(path.join(ICONS, 'app.png'));
+  await sharp(master).resize(64, 64).png().toFile(path.join(ICONS, 'tray-base.png'));
 
   const sizes = [16, 24, 32, 48, 64, 128, 256];
   const bufs = await Promise.all(
-    sizes.map((s) => sharp(svg).resize(s, s).png().toBuffer())
+    sizes.map((s) => sharp(master).resize(s, s).png().toBuffer())
   );
   const ico = await pngToIco(bufs);
   fs.writeFileSync(path.join(ICONS, 'app.ico'), ico);
-  console.log('✔ تم توليد الأيقونات: app.png, tray-base.png, app.ico');
+  console.log('✔ تم توليد الأيقونات من شعار Tha: app.png, tray-base.png, app.ico');
 }
 
 (async () => {

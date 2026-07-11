@@ -30,6 +30,7 @@ body {
   flex: 1;
 }
 .brand svg { width: 20px; height: 20px; opacity: 0.95; }
+.brand .brand-logo { width: 22px; height: 21px; object-fit: contain; }
 .actions { display: flex; align-items: center; gap: 2px; }
 .iconbtn {
   width: 28px; height: 28px;
@@ -71,7 +72,7 @@ body {
   justify-content: space-between;
   gap: 8px;
 }
-.dates .hijri { font-size: 16px; font-weight: 700; color: var(--text); }
+.dates .hijri { font-family: 'Thmanyah Display', 'Thmanyah Sans', serif; font-size: 17px; font-weight: 700; color: var(--text); }
 .dates .greg { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
 .city {
   display: inline-flex; align-items: center; gap: 4px;
@@ -90,8 +91,9 @@ body {
 .next-wrap { text-align: center; padding: 10px 0 6px; }
 .next-label { font-size: 13px; color: var(--text-soft); }
 .next-name {
-  font-size: 34px; font-weight: 700; color: var(--brand-700);
-  margin: 2px 0 0; line-height: 1.15;
+  font-family: 'Thmanyah Display', 'Thmanyah Sans', serif;
+  font-size: 36px; font-weight: 700; color: var(--brand-700);
+  margin: 2px 0 0; line-height: 1.2;
 }
 .theme-dark .next-name { color: #63d7a6; }
 .next-time { font-size: 17px; color: var(--text); margin-top: 2px; }

@@ -23,7 +23,7 @@ class AppState extends EventEmitter {
     this.lastError = null;
     this.cacheFile = null;
     this.cities = []; // قائمة المدن (119 موقعًا بإحداثياتها) من assets/data/cities.json
-    this.adhan = null; // مكتبة حساب المواقيت (تُحمَّل مرة واحدة)
+    this.adhan = null; // مكتبة حساب أم القرى (تُحمَّل مرة واحدة)
     this.resolved = null; // نتيجة حسم مواقيت المدينة المختارة
   }
 

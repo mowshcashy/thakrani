@@ -5,6 +5,10 @@
   "description": "ودجت مواقيت الصلاة لسطح المكتب اعتمادًا على مواقيت أم القرى الرسمية",
   "author": "MOATH ALWASHMI",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mowshcashy/thakrani.git"
+  },
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
@@ -22,6 +26,11 @@
   "build": {
     "appId": "com.moath.thakkerni",
     "productName": "ذكِّرني",
+    "publish": {
+      "provider": "github",
+      "owner": "mowshcashy",
+      "repo": "thakrani"
+    },
     "files": [
       "src/**/*",
       "assets/**/*",
