@@ -136,7 +136,7 @@ img { max-width: 100%; }
   font-weight: 700;
   margin-inline-end: auto;
 }
-.nav-brand img { width: 34px; height: 32px; object-fit: contain; }
+.nav-brand img { width: 42px; height: 40px; object-fit: contain; }
 .nav-links { display: flex; gap: 26px; font-size: 15px; font-weight: 500; color: var(--ink-soft); }
 .nav-links a { position: relative; transition: color .25s; }
 .nav-links a:hover { color: var(--green); }
@@ -464,11 +464,108 @@ img { max-width: 100%; }
   transition: transform .45s var(--ease), box-shadow .45s var(--ease);
 }
 .shot-card:hover { transform: translateY(-8px) rotate(.4deg); }
+.shot-card > div { border-radius: 14px; overflow: hidden; }
 .shot-card img { border-radius: 14px; display: block; width: 100%; }
 .shot-cap { font-size: 14px; color: var(--ink-soft); margin-top: 14px; text-align: center; }
 .shots-side { display: flex; flex-direction: column; gap: 34px; }
 .shot-mini { padding: 26px; display: grid; place-items: center; background: linear-gradient(135deg, var(--paper-deep), var(--card)); }
-.shot-mini img { width: 85%; max-width: 300px; border-radius: 12px; }
+.shot-mini > div { width: 100%; max-width: 300px; }
+
+/* ─── معاينة ودجتات التطبيق ─── */
+.demo-widget {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  direction: rtl;
+  font-family: 'Thmanyah Sans', sans-serif;
+  color: var(--ink);
+}
+
+/* وضع كل الصلوات */
+.demo-widget-all { display: flex; flex-direction: column; gap: 16px; }
+.demo-all-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line);
+}
+.demo-all-city { font-weight: 700; font-size: 15px; color: var(--green); }
+.demo-all-date { font-size: 12px; color: var(--ink-faint); }
+.demo-all-list { display: flex; flex-direction: column; gap: 8px; }
+.demo-all-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.demo-all-row.is-next {
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--green) inset;
+}
+.demo-all-row span:last-child { direction: ltr; font-variant-numeric: tabular-nums; }
+
+/* وضع أقرب صلاة */
+.demo-widget-next {
+  text-align: center;
+  padding: 34px 28px;
+  background: linear-gradient(180deg, var(--card) 60%, var(--green-soft));
+}
+.demo-next-label { font-size: 13px; color: var(--ink-faint); margin-bottom: 6px; }
+.demo-next-name {
+  font-family: 'Thmanyah Display', serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.2;
+}
+.demo-next-time { font-size: 17px; color: var(--ink-soft); margin-top: 4px; }
+.demo-next-count {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--ink);
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+  margin-top: 14px;
+  letter-spacing: 2px;
+}
+.demo-next-words { font-size: 13px; color: var(--ink-faint); margin-top: 4px; }
+
+/* الودجت المصغّرة */
+.demo-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .82);
+  border: 1px solid rgba(255, 255, 255, .5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #12241b;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+[data-theme="dark"] .demo-mini {
+  background: rgba(12, 31, 24, .78);
+  border-color: rgba(237, 245, 239, .14);
+  color: #edf5ef;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5), 0 0 0 1px rgba(237, 245, 239, .1);
+}
+.demo-mini-time { direction: ltr; font-variant-numeric: tabular-nums; }
+.demo-mini-sep { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .5; }
+.demo-mini-prayer { color: var(--green, #0b5136); font-weight: 700; }
+[data-theme="dark"] .demo-mini-prayer { color: #6ee7ab; }
 
 /* ─── التحميل ─── */
 .download { padding-block: 90px 110px; }
@@ -503,7 +600,7 @@ img { max-width: 100%; }
   border: 1px solid rgba(255,255,255,.08);
   pointer-events: none;
 }
-.dl-logo { width: 74px; height: 70px; object-fit: contain; margin-bottom: 20px; }
+.dl-logo { width: 86px; height: 82px; object-fit: contain; margin-bottom: 20px; }
 .dl-title { font-size: clamp(30px, 4vw, 44px); color: #fff; }
 .dl-sub { font-size: 16px; color: rgba(242, 248, 242, .75); margin-top: 12px; font-weight: 300; }
 .dl-btn {
@@ -549,7 +646,7 @@ img { max-width: 100%; }
   flex-wrap: wrap;
 }
 .footer-brand { display: flex; align-items: center; gap: 10px; font-family: 'Thmanyah Display', serif; font-size: 19px; font-weight: 700; }
-.footer-brand img { width: 30px; height: 28px; object-fit: contain; }
+.footer-brand img { width: 36px; height: 34px; object-fit: contain; }
 .footer-note { font-size: 13.5px; color: var(--ink-faint); margin-inline-start: auto; text-align: left; line-height: 1.9; }
 .footer-note b { color: var(--ink-soft); }
 
