@@ -29,7 +29,8 @@
     "publish": {
       "provider": "github",
       "owner": "mowshcashy",
-      "repo": "thakrani"
+      "repo": "thakrani",
+      "releaseType": "release"
     },
     "files": [
       "src/**/*",
