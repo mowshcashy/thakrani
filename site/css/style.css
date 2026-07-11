@@ -449,8 +449,19 @@ img { max-width: 100%; }
 
 /* ─── اللقطات ─── */
 .shots { padding-block: 40px 110px; }
-.shots-row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 34px; align-items: start; }
-.shots-row-app { margin-top: 34px; }
+
+/* التخطيط المربع: كل الصلوات يمين، أقرب صلاة فوق + مصغّرة تحت يسار */
+.shots-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 34px;
+  align-items: stretch;
+}
+.shots-col {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
 .shot-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -459,18 +470,21 @@ img { max-width: 100%; }
   box-shadow: var(--card-shadow);
   transition: transform .45s var(--ease), box-shadow .45s var(--ease);
   margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .shot-card:hover { transform: translateY(-8px) rotate(.4deg); }
+.shot-card > div:first-child { flex: 1; display: flex; flex-direction: column; }
 .shot-card > div { border-radius: 14px; overflow: hidden; }
 .shot-card img { border-radius: 14px; display: block; width: 100%; }
 .shot-cap { font-size: 14px; color: var(--ink-soft); margin-top: 14px; text-align: center; }
 .shot-mini-app {
-  padding: 34px;
-  display: grid;
-  place-items: center;
+  padding: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(14, 107, 69, .18), transparent 40%),
-    linear-gradient(135deg, var(--paper-deep), var(--card));
+    radial-gradient(circle at 25% 25%, rgba(14, 107, 69, .22), transparent 45%),
+    linear-gradient(145deg, #1a3c2d 0%, #0d2118 60%, #071510 100%);
+  min-height: 220px;
 }
 
 /* ─── معاينة التطبيق الحقيقي ─── */
@@ -694,6 +708,34 @@ img { max-width: 100%; }
   border: none; padding: 0;
 }
 
+/* حاوية الودجت المصغّرة العائمة */
+.mini-stack {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 34px 24px;
+  min-height: 220px;
+}
+.mini-floating {
+  position: relative;
+  z-index: 2;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.mini-shadow {
+  position: absolute;
+  bottom: 34px;
+  width: 260px; height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .35);
+  filter: blur(14px);
+  z-index: 1;
+}
+
 /* ─── التحميل ─── */
 .download { padding-block: 90px 110px; }
 .dl-card {
@@ -795,7 +837,7 @@ img { max-width: 100%; }
   .hero { padding-block: 60px 80px; }
   .feat { grid-template-columns: 60px 1fr; }
   .feat-desc { grid-column: 2; }
-  .shots-row { grid-template-columns: 1fr; }
+  .shots-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .clock-prayer { font-size: 52px; }
   .clock-count { font-size: 42px; }
