@@ -453,8 +453,8 @@ img { max-width: 100%; }
 /* التخطيط المربع: كل الصلوات يمين، أقرب صلاة فوق + مصغّرة تحت يسار */
 .shots-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 34px;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
   align-items: stretch;
 }
 .shots-col {
@@ -484,7 +484,7 @@ img { max-width: 100%; }
   background:
     radial-gradient(circle at 25% 25%, rgba(14, 107, 69, .22), transparent 45%),
     linear-gradient(145deg, #1a3c2d 0%, #0d2118 60%, #071510 100%);
-  min-height: 220px;
+  min-height: 170px;
 }
 
 /* ─── معاينة التطبيق الحقيقي ─── */
@@ -662,14 +662,14 @@ img { max-width: 100%; }
 /* الودجت المصغّرة */
 .app-mini-wrap {
   position: relative;
-  display: inline-block;
+  width: 248px;
 }
 .app-mini {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 11px;
+  padding: 9px 13px;
   border-radius: 14px;
   background: rgba(9, 27, 20, .42);
   backdrop-filter: blur(10px) saturate(1.1);
@@ -677,12 +677,11 @@ img { max-width: 100%; }
   border: 1px solid rgba(255, 255, 255, .14);
   box-shadow: 0 8px 22px -8px rgba(0, 0, 0, .55);
   color: #fff;
-  white-space: nowrap;
   direction: rtl;
   font-family: 'Thmanyah Sans', 'Segoe UI', Tahoma, sans-serif;
   line-height: 1.25;
 }
-.app-mini-crescent { width: 19px; height: 18px; opacity: .95; flex: none; object-fit: contain; }
+.app-mini-crescent { width: 18px; height: 17px; opacity: .95; flex: none; object-fit: contain; }
 .app-mini-col { display: flex; flex-direction: column; }
 .app-mini-prayer { font-size: 15px; font-weight: 700; }
 .app-mini-time { font-weight: 500; opacity: .9; margin-inline-start: 6px; font-size: 13px; }
@@ -694,13 +693,15 @@ img { max-width: 100%; }
 .app-mini-cd { direction: ltr; }
 .app-mini-clock {
   margin-inline-start: auto;
-  font-size: 20px; font-weight: 700;
+  font-size: 19px; font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: .5px;
   direction: ltr;
+  padding-inline-start: 11px;
+  border-inline-start: 1px solid rgba(255, 255, 255, .18);
 }
 .app-mini-close {
-  position: absolute; top: -6px; inset-inline-start: -6px;
+  position: absolute; top: -7px; inset-inline-start: -7px;
   width: 18px; height: 18px; border-radius: 50%;
   background: rgba(0, 0, 0, .55); color: #fff;
   display: flex; align-items: center; justify-content: center;
@@ -714,8 +715,8 @@ img { max-width: 100%; }
   flex: 1;
   display: grid;
   place-items: center;
-  padding: 34px 24px;
-  min-height: 220px;
+  padding: 18px 22px;
+  min-height: 170px;
 }
 .mini-floating {
   position: relative;
@@ -724,15 +725,15 @@ img { max-width: 100%; }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 .mini-shadow {
   position: absolute;
-  bottom: 34px;
-  width: 260px; height: 18px;
+  bottom: 16px;
+  width: 220px; height: 14px;
   border-radius: 50%;
   background: rgba(0, 0, 0, .35);
-  filter: blur(14px);
+  filter: blur(12px);
   z-index: 1;
 }
 
@@ -819,22 +820,6 @@ img { max-width: 100%; }
 }
 .behind-body p + p { margin-top: 16px; }
 .behind-body b { font-weight: 700; color: var(--ink); }
-
-/* قائمة الأنواع الثلاثة */
-.behind-types {
-  list-style: none;
-  max-width: 62ch;
-  margin: 18px auto;
-  padding: 0;
-}
-.behind-types li {
-  font-size: 16.5px; color: var(--ink-soft); font-weight: 300;
-  line-height: 1.9;
-  padding: 15px 4px;
-  border-top: 1px solid var(--line);
-}
-.behind-types li:last-child { border-bottom: 1px solid var(--line); }
-.behind-types b { font-weight: 700; color: var(--ink); font-family: 'Thmanyah Display', serif; }
 
 /* ─── الأسئلة الشائعة ─── */
 .faq { padding-block: 100px; }
