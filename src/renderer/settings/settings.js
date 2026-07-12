@@ -121,6 +121,22 @@ function render() {
           </div>
         </div>
         <div class="row">
+          <div class="ltext"><span class="label">تشغيل الصوت عند</span><span class="desc">الأذان، الإقامة، أو كليهما</span></div>
+          <div class="seg">
+            <button data-action="timing-adhan" class="${s.adhanTiming === 'adhan' || !s.adhanTiming ? 'active' : ''}">الأذان</button>
+            <button data-action="timing-iqama" class="${s.adhanTiming === 'iqama' ? 'active' : ''}">الإقامة</button>
+            <button data-action="timing-both" class="${s.adhanTiming === 'both' ? 'active' : ''}">الاثنين</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ltext"><span class="label">وقت الإقامة</span><span class="desc">بعد الأذان — يظهر عدّادها في الودجت</span></div>
+          <div class="seg">
+            ${[5, 10, 15, 20].map((m) =>
+              `<button data-action="iqama-${m}" class="${(s.iqamaOffset || 10) === m ? 'active' : ''}">${window.ZN.toArabicDigits(m)} د</button>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="row">
           <div class="ltext"><span class="label">مستوى الصوت</span></div>
           <input type="range" min="0" max="1" step="0.05" value="${s.adhanVolume}" data-action="adhan-volume"/>
         </div>
@@ -180,6 +196,10 @@ form.addEventListener('click', async (e) => {
   if (a === 'fmt-24') return patch({ timeFormat: 24 });
   if (a === 'adhan-full') return patch({ adhanMode: 'full' });
   if (a === 'adhan-takbeer') return patch({ adhanMode: 'takbeer' });
+  if (a === 'timing-adhan') return patch({ adhanTiming: 'adhan' });
+  if (a === 'timing-iqama') return patch({ adhanTiming: 'iqama' });
+  if (a === 'timing-both') return patch({ adhanTiming: 'both' });
+  if (a.startsWith('iqama-')) return patch({ iqamaOffset: parseInt(a.slice(6), 10) });
   if (a === 'adhan-test') return window.zn.testAdhan();
   if (a === 'adhan-pick') {
     const f = await window.zn.pickAdhan();

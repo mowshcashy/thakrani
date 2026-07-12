@@ -1,7 +1,7 @@
 {
   "name": "thakkerni",
   "productName": "ذكِّرني",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ودجت مواقيت الصلاة لسطح المكتب اعتمادًا على مواقيت أم القرى الرسمية",
   "author": "MOATH ALWASHMI",
   "license": "MIT",
@@ -65,7 +65,7 @@
       "createStartMenuShortcut": true,
       "runAfterFinish": true,
       "shortcutName": "ذكِّرني",
-      "artifactName": "Thakkerni-Setup-${version}.${ext}"
+      "artifactName": "Thakkerni-Setup.${ext}"
     }
   },
   "dependencies": {

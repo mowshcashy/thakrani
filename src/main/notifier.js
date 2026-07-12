@@ -28,9 +28,24 @@ function notifyPrayer(prayer) {
   return n;
 }
 
+function notifyIqama(prayer, offsetMin) {
+  if (!Notification.isSupported()) return;
+  let icon;
+  try { icon = paths.asset('icons', 'app.png'); } catch (_) { icon = undefined; }
+  const n = new Notification({
+    title: `حان وقت إقامة صلاة ${prayer.name}`,
+    body: `بعد الأذان بـ${offsetMin} دقائق\nذكِّرني — مواقيت أم القرى`,
+    icon,
+    silent: true,
+    timeoutType: 'default',
+  });
+  n.show();
+  return n;
+}
+
 function notify(title, body) {
   if (!Notification.isSupported()) return;
   new Notification({ title, body, silent: true }).show();
 }
 
-module.exports = { notifyPrayer, notify };
+module.exports = { notifyPrayer, notifyIqama, notify };

@@ -110,11 +110,25 @@ function positionWidget() {
   }
 }
 
+// إظهار نافذة بعد اكتمال تحميل محتواها فقط (يمنع الوميض الأبيض عند الإقلاع)
+function showWhenReady(win, showFn) {
+  if (!win || win.isDestroyed()) return;
+  if (win.webContents.isLoading()) {
+    win.once('ready-to-show', () => {
+      if (!win.isDestroyed()) showFn();
+    });
+  } else {
+    showFn();
+  }
+}
+
 function showWidget() {
   createWidget();
   positionWidget();
-  widgetWin.show();
-  widgetWin.focus();
+  showWhenReady(widgetWin, () => {
+    widgetWin.show();
+    widgetWin.focus();
+  });
 }
 
 function hideWidget() {
@@ -239,7 +253,7 @@ function positionMini() {
 function showMini() {
   createMini();
   positionMini();
-  miniWin.showInactive(); // إظهار دون سرقة التركيز
+  showWhenReady(miniWin, () => miniWin.showInactive()); // إظهار دون سرقة التركيز
 }
 
 function hideMini() {

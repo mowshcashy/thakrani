@@ -10,6 +10,7 @@ const ICON = {
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V22a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 6.3 20l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 15H2.9a2 2 0 1 1 0-4H3a1.7 1.7 0 0 0 1.5-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 3.9V4a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 17 5.5l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 11h.1a2 2 0 1 1 0 4H21z"/></svg>',
   pin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 4v6l3 3v2H7v-2l3-3V4H8V2h8v2z"/><path d="M11 15h2v7h-2z"/></svg>',
   close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  power: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.2 6.4a8 8 0 1 0 11.6 0"/></svg>',
   loc: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>',
 };
 
@@ -70,6 +71,7 @@ function render() {
   const connText = p.online ? 'متّصل' : 'غير متّصل';
   const status = `
     <div class="statusbar">
+      <button class="power no-drag" data-action="quit" title="إغلاق التطبيق نهائيًا">${ICON.power}</button>
       <span class="conn ${conn}"><span class="cdot"></span>${connText} · تحديث ${esc(localHM(p.fetchedAt, fmt))}</span>
       <button class="refresh no-drag" data-action="refresh" title="تحديث الآن">${ICON.refresh}<span>تحديث</span></button>
     </div>`;
@@ -79,13 +81,29 @@ function render() {
   resize();
 }
 
+// هل نحن في فترة ما بين الأذان والإقامة للصلاة الحالية؟
+function iqamaInfo(p) {
+  if (!p || !p.currentTs || !p.settings) return null;
+  const offsetMs = (p.settings.iqamaOffset || 10) * 60 * 1000;
+  const iqamaTs = p.currentTs + offsetMs;
+  if (Date.now() >= p.currentTs && Date.now() < iqamaTs) {
+    return { ts: iqamaTs, name: p.currentName };
+  }
+  return null;
+}
+
 function renderNext(p, fmt) {
   const n = p.next;
   if (!n) return '<div class="content"><div class="loading">—</div></div>';
   const tag = n.isTomorrow ? '<span class="tag">غدًا</span>' : '';
+  const iq = iqamaInfo(p);
+  const iqamaLine = iq
+    ? `<div class="iqama-line" id="iqline">الإقامة بعد <b id="iqcd">${window.ZN.formatCountdown(iq.ts - Date.now())}</b></div>`
+    : '';
   return `
     <div class="content">
       <div class="next-wrap">
+        ${iqamaLine}
         <div class="next-label">الصلاة القادمة</div>
         <div class="next-name">${esc(n.name)}</div>
         <div class="next-time">${esc(window.ZN.formatClock(n.time, fmt))} ${tag}</div>
@@ -129,6 +147,16 @@ function tickCountdown() {
   const cdw = document.getElementById('cdw');
   if (cd) cd.textContent = window.ZN.formatCountdown(ms);
   if (cdw) cdw.textContent = window.ZN.formatCountdownWords(ms);
+
+  // عدّاد الإقامة: حدّثه، وأعد الرسم عند بدايته أو نهايته
+  const iq = iqamaInfo(current);
+  const line = document.getElementById('iqline');
+  if (iq && line) {
+    const el = document.getElementById('iqcd');
+    if (el) el.textContent = window.ZN.formatCountdown(iq.ts - Date.now());
+  } else if (!!iq !== !!line) {
+    render();
+  }
 }
 
 function resize() {
@@ -151,6 +179,7 @@ root.addEventListener('click', (e) => {
     case 'refresh': window.zn.refresh(); break;
     case 'settings': window.zn.openSettings(); break;
     case 'hide': window.zn.hideWidget(); break;
+    case 'quit': window.zn.quit(); break;
     case 'city': window.zn.openSettings(); break;
     case 'pin':
       window.zn.setSettings({ widgetPinned: !(current && current.settings.widgetPinned) });

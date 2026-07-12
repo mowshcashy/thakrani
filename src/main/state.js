@@ -114,6 +114,8 @@ class AppState extends EventEmitter {
       prayers: sched ? sched.prayers.map((p) => ({ key: p.key, name: p.name, time: p.time })) : [],
       sunrise: sched && sched.sunrise ? { key: 'sunrise', name: sched.sunrise.name, time: sched.sunrise.time } : null,
       currentKey: sched && sched.current ? sched.current.key : null,
+      currentName: sched && sched.current ? sched.current.name : null,
+      currentTs: sched && sched.current && sched.current.date ? sched.current.date.getTime() : null,
       next: sched && sched.next && sched.next.date
         ? {
             key: sched.next.key,

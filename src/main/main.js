@@ -3,8 +3,9 @@
  * main.js — نقطة الدخول والمنسّق العام لتطبيق «ذكِّرني».
  */
 
-const { app } = require('electron');
+const { app, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 const state = require('./state');
 const store = require('./store');
@@ -17,19 +18,39 @@ const paths = require('./paths');
 
 const APP_ID = 'com.moath.thakkerni';
 
+// النوافذ الشفافة بلا إطار + تسريع العتاد = وميض/قلتشات على بعض كروت الشاشة.
+// تعطيل التسريع يجعل الرسم مستقرًا (الواجهات خفيفة ولا تحتاج GPU).
+app.disableHardwareAcceleration();
+
 let isQuitting = false;
 let bgReady = false;
 let pendingTraySpec = null;
-const firedPrayers = new Map(); // key -> ts لتفادي التكرار
+const firedEvents = new Map(); // "key:kind" -> ts لتفادي التكرار
+
+// ---------- سجلّ الأعطال ----------
+function logError(kind, err) {
+  try {
+    const line = `[${new Date().toISOString()}] ${kind}: ${(err && (err.stack || err.message)) || err}\n`;
+    fs.appendFileSync(path.join(app.getPath('userData'), 'error.log'), line, 'utf8');
+  } catch (_) {}
+}
+process.on('uncaughtException', (e) => logError('uncaughtException', e));
+process.on('unhandledRejection', (e) => logError('unhandledRejection', e));
 
 // ---------- منع تعدّد النسخ ----------
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
+  // نسخة أخرى تعمل — أبلغها بإظهار الودجت ثم اخرج بهدوء
   app.quit();
 } else {
   app.on('second-instance', () => windows.showWidget());
   app.setAppUserModelId(APP_ID);
-  app.whenReady().then(init);
+  app.whenReady().then(() =>
+    init().catch((e) => {
+      logError('init', e);
+      dialog.showErrorBox('ذكِّرني', 'حدث خطأ أثناء بدء التشغيل. راجع error.log في مجلد بيانات التطبيق.');
+    })
+  );
 }
 
 async function init() {
@@ -140,34 +161,50 @@ function onStateUpdate(payload) {
   // 1) بثّ للواجهات
   windows.broadcast('state:update', payload);
 
-  // 2) إعادة جدولة التنبيهات
-  scheduler.reschedule(state.schedule, onPrayer);
+  // 2) إعادة جدولة التنبيهات (أذان + إقامة)
+  scheduler.reschedule(state.schedule, payload.settings.iqamaOffset, onPrayerEvent);
 
   // 3) تحديث الـ tray (أيقونة + تلميح + قائمة)
   updateTray(payload);
 }
 
-function onPrayer(prayer) {
+/**
+ * يُستدعى عند دخول وقت الصلاة (kind='adhan') وعند وقت الإقامة (kind='iqama').
+ * إعداد adhanTiming يحدد متى يُشغَّل الصوت: عند الأذان، عند الإقامة، أو كليهما.
+ */
+function onPrayerEvent(prayer, kind) {
   const stamp = prayer.date ? prayer.date.getTime() : 0;
-  if (firedPrayers.get(prayer.key) === stamp) return; // سبق إطلاقه
-  firedPrayers.set(prayer.key, stamp);
+  const dedupeKey = `${prayer.key}:${kind}`;
+  if (firedEvents.get(dedupeKey) === stamp) return; // سبق إطلاقه
+  firedEvents.set(dedupeKey, stamp);
 
   const s = store.getAll();
-  if (s.notifications && s.notifications[prayer.key]) {
-    notifier.notifyPrayer(prayer);
+  const notifyOn = s.notifications && s.notifications[prayer.key];
+  const timing = s.adhanTiming || 'adhan';
+  const soundNow = s.adhanEnabled && (timing === 'both' || timing === kind);
+
+  if (kind === 'adhan') {
+    if (notifyOn) notifier.notifyPrayer(prayer);
+    if (soundNow) playAdhan('adhan');
+  } else {
+    if (notifyOn) notifier.notifyIqama(prayer, s.iqamaOffset);
+    if (soundNow) playAdhan('iqama');
   }
-  if (s.adhanEnabled) {
-    playAdhan();
-  }
-  // إعادة الحساب للانتقال إلى الصلاة التالية
+  // إعادة الحساب لتحديث الواجهات (الانتقال للصلاة التالية / عدّاد الإقامة)
   state.recompute();
 }
 
-function playAdhan() {
+/**
+ * تشغيل الصوت. عند الإقامة يُستخدم مقطع التكبيرات القصير دائمًا
+ * (الإقامة ليست أذانًا كاملًا)، وعند الأذان حسب اختيار المستخدم.
+ */
+function playAdhan(kind = 'adhan') {
   const s = store.getAll();
-  const takbeer = s.adhanMode === 'takbeer';
+  const takbeer = kind === 'iqama' || s.adhanMode === 'takbeer';
   const file =
-    s.adhanFile || paths.assetUnpacked('audio', takbeer ? 'adhan-takbeer.mp3' : 'adhan-full.mp3');
+    kind === 'iqama'
+      ? paths.assetUnpacked('audio', 'adhan-takbeer.mp3')
+      : s.adhanFile || paths.assetUnpacked('audio', takbeer ? 'adhan-takbeer.mp3' : 'adhan-full.mp3');
   windows.sendToBackground('adhan:play', {
     file,
     volume: s.adhanVolume,
