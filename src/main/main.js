@@ -13,6 +13,7 @@ const windows = require('./windows');
 const tray = require('./tray');
 const scheduler = require('./scheduler');
 const notifier = require('./notifier');
+const updater = require('./updater');
 const ipc = require('./ipc');
 const paths = require('./paths');
 
@@ -68,7 +69,12 @@ async function init() {
     onSetMode: (m) => applySettings({ viewMode: m }),
     onPickCity: (c) => applySettings({ city: c }),
     onToggleMini: (v) => applySettings({ miniEnabled: v }),
+    onCheckUpdate: () => updater.checkNow(),
+    onInstallUpdate: () => updater.installNow(),
   });
+
+  // التحديث التلقائي (يعمل في النسخة المثبَّتة فقط)
+  updater.init({ onStateChange: () => updateTray(state.getPayload()) });
 
   ipc.register({
     applySettings,
@@ -244,6 +250,7 @@ function updateTray(payload) {
     currentCity: payload.city,
     viewMode: payload.settings.viewMode,
     miniEnabled: payload.settings.miniEnabled,
+    updateVersion: updater.readyVersion(),
   });
 }
 

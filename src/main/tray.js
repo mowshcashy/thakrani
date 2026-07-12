@@ -45,7 +45,7 @@ function setTooltip(text) {
   if (tray) tray.setToolTip(text);
 }
 
-function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled } = {}) {
+function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, updateVersion } = {}) {
   if (!tray) return;
 
   // تجميع المدن ضمن مناطقها (قائمة فرعية لكل منطقة)
@@ -95,7 +95,16 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled } = {}) {
       click: () => handlers.onToggleMini && handlers.onToggleMini(!miniEnabled),
     },
     { type: 'separator' },
-    { label: 'تحديث الآن', click: () => handlers.onRefresh && handlers.onRefresh() },
+    { label: 'تحديث المواقيت الآن', click: () => handlers.onRefresh && handlers.onRefresh() },
+    updateVersion
+      ? {
+          label: `⬇ إعادة التشغيل للتحديث (${updateVersion})`,
+          click: () => handlers.onInstallUpdate && handlers.onInstallUpdate(),
+        }
+      : {
+          label: 'التحقق من التحديثات…',
+          click: () => handlers.onCheckUpdate && handlers.onCheckUpdate(),
+        },
     { label: 'الإعدادات…', click: () => handlers.onOpenSettings && handlers.onOpenSettings() },
     { type: 'separator' },
     { label: 'خروج', click: () => handlers.onQuit && handlers.onQuit() },
