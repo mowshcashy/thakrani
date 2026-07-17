@@ -52,10 +52,16 @@ function resize() {
   requestAnimationFrame(() => {
     const el = root.querySelector('.mini');
     if (!el) return;
-    const w = Math.ceil(el.getBoundingClientRect().width) + 12;
+    // +12 حشوة الجسم (6×2) + 4 هامش أمان ضد فروق القياس
+    const w = Math.ceil(el.getBoundingClientRect().width) + 16;
     const h = Math.ceil(el.getBoundingClientRect().height) + 12;
     window.zn.resizeMini(w, h);
   });
+}
+
+// خط ثمانية يغيّر عرض النص بعد تحميله — أعد القياس عندها وإلا انقصّ المحتوى
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => resize());
 }
 
 root.addEventListener('click', (e) => {

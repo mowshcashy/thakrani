@@ -168,6 +168,11 @@ function resize() {
   });
 }
 
+// أعد القياس بعد تحميل خط ثمانية (يغيّر أبعاد النص)
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => resize());
+}
+
 // أحداث النقر
 root.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-action]');

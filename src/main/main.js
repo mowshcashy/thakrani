@@ -128,13 +128,18 @@ async function init() {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       try {
         if (shotDir) {
+          await wait(800); // دع الخط يكتمل والقياس يستقر قبل الالتقاط
           const w = windows.getWidget();
           if (w) {
+            const origMode = store.get('viewMode'); // ثبّت الوضع لكل لقطة ثم أعده
+            state.setSettings({ viewMode: 'next' });
+            await wait(700);
             fs.writeFileSync(path.join(shotDir, 'widget-next.png'), (await w.webContents.capturePage()).toPNG());
             state.setSettings({ viewMode: 'all' });
             await wait(700);
             fs.writeFileSync(path.join(shotDir, 'widget-all.png'), (await w.webContents.capturePage()).toPNG());
-            state.setSettings({ viewMode: 'next' });
+            state.setSettings({ viewMode: origMode });
+            await wait(400);
           }
           const mw = windows.getMini();
           if (mw) fs.writeFileSync(path.join(shotDir, 'mini.png'), (await mw.webContents.capturePage()).toPNG());
