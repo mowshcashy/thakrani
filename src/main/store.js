@@ -24,7 +24,7 @@ const DEFAULTS = {
   adhanMode: 'full', // 'full' = أذان كامل | 'takbeer' = تكبيرات فقط (≤16 ث)
   adhanTiming: 'adhan', // متى يُشغَّل الصوت: 'adhan' | 'iqama' | 'both'
   iqamaOffset: 10, // دقائق بعد الأذان: 5 | 10 | 15 | 20
-  adhanVolume: 0.8,
+  adhanVolume: 1.0,
   autoStart: true,
   widgetBounds: null, // {x, y} آخر موضع للودجت
   widgetPinned: false,

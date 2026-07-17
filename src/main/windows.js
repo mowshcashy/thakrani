@@ -287,7 +287,12 @@ function createBackground() {
     width: 200,
     height: 200,
     show: false,
-    webPreferences: baseWebPrefs(),
+    webPreferences: {
+      ...baseWebPrefs(),
+      // نافذة الصوت: اسمح بالتشغيل دون إيماءة مستخدم ولا تخنقها وهي مخفية
+      autoplayPolicy: 'no-user-gesture-required',
+      backgroundThrottling: false,
+    },
   });
   attachDebug(bgWin, 'bg');
   bgWin.loadFile(paths.rendererFile('tray-render', 'index.html'));

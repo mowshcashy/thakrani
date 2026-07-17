@@ -143,7 +143,8 @@ function render() {
         <div class="row">
           <div class="ltext"><span class="label">ملف الأذان</span><span class="adhan-file">${esc(fileName(s.adhanFile))}</span></div>
           <div class="footer-actions">
-            <button class="btn" data-action="adhan-test">تجربة</button>
+            <button class="btn" data-action="adhan-test" id="adhanTestBtn">تجربة</button>
+            <button class="btn" data-action="adhan-stop">إيقاف</button>
             <button class="btn brand" data-action="adhan-pick">اختيار…</button>
           </div>
         </div>
@@ -201,6 +202,7 @@ form.addEventListener('click', async (e) => {
   if (a === 'timing-both') return patch({ adhanTiming: 'both' });
   if (a.startsWith('iqama-')) return patch({ iqamaOffset: parseInt(a.slice(6), 10) });
   if (a === 'adhan-test') return window.zn.testAdhan();
+  if (a === 'adhan-stop') return window.zn.stopAdhan();
   if (a === 'adhan-pick') {
     const f = await window.zn.pickAdhan();
     if (f) { settings = await window.zn.getSettings(); render(); }
@@ -209,6 +211,13 @@ form.addEventListener('click', async (e) => {
   if (a === 'adhan-reset') return patch({ adhanFile: null });
   if (a === 'show-widget') return window.zn.showWidget();
   if (a === 'quit') return window.zn.quit();
+});
+
+// أثناء سحب شريط الصوت: معاينة فورية على الصوت الجاري دون حفظ/إعادة رسم؛
+// الحفظ الفعلي يتم عند الإفلات (حدث change)
+form.addEventListener('input', (e) => {
+  const el = e.target.closest('[data-action="adhan-volume"]');
+  if (el) window.zn.previewVolume(parseFloat(el.value));
 });
 
 form.addEventListener('change', (e) => {

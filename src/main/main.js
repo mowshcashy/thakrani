@@ -26,6 +26,7 @@ app.disableHardwareAcceleration();
 let isQuitting = false;
 let bgReady = false;
 let pendingTraySpec = null;
+let audioErrorNotified = false; // إشعار واحد فقط لمشاكل الصوت في الجلسة
 const firedEvents = new Map(); // "key:kind" -> ts لتفادي التكرار
 
 // ---------- سجلّ الأعطال ----------
@@ -86,6 +87,13 @@ async function init() {
       bgReady = true;
       if (pendingTraySpec) windows.sendToBackground('tray:render', pendingTraySpec);
     },
+    onAudioError: (msg) => {
+      logError('audio', msg);
+      if (!audioErrorNotified) {
+        audioErrorNotified = true;
+        notifier.notify('ذكِّرني — مشكلة في الصوت', 'تعذّر تشغيل الأذان. التفاصيل في error.log بمجلد بيانات التطبيق.');
+      }
+    },
   });
 
   state.on('update', onStateUpdate);
@@ -138,7 +146,17 @@ async function init() {
         if (process.env.ZN_TEST_ADHAN) {
           console.log('SMOKE playing adhan (mode=', store.get('adhanMode'), ')');
           playAdhan();
-          await wait(2500);
+          await wait(3000);
+          // مجسّ حقيقي: اقرأ حالة عنصر الصوت من النافذة الخلفية
+          const bg = windows.getBackground();
+          if (bg) {
+            const probe = await bg.webContents.executeJavaScript(`(() => {
+              const a = document.getElementById('adhan');
+              return { paused: a.paused, time: a.currentTime, vol: a.volume,
+                       err: a.error ? a.error.code : null, src: (a.currentSrc||'').split('/').pop() };
+            })()`);
+            console.log('SMOKE AUDIO', JSON.stringify(probe));
+          }
         }
       } catch (e) {
         console.log('SMOKE shot error', e.message);
@@ -281,6 +299,10 @@ function applySettings(patch) {
   if (patch && typeof patch.miniEnabled === 'boolean') {
     windows.setMiniEnabled(patch.miniEnabled);
   }
+  // مستوى الصوت يسري فورًا حتى أثناء تشغيل الأذان
+  if (patch && typeof patch.adhanVolume === 'number') {
+    windows.sendToBackground('adhan:volume', patch.adhanVolume);
+  }
   return after;
 }
 
@@ -301,8 +323,19 @@ function applyAutoStart(enabled) {
 
 function quit() {
   isQuitting = true;
-  tray.destroy();
+  // كل خطوة معزولة: فشل واحدة لا يمنع الخروج
+  try { scheduler.clear(); } catch (_) {}
+  try { tray.destroy(); } catch (_) {}
+  try {
+    const { BrowserWindow } = require('electron');
+    // destroy يتجاوز أي منع إغلاق ويحرر كل النوافذ فورًا
+    BrowserWindow.getAllWindows().forEach((w) => { try { w.destroy(); } catch (_) {} });
+  } catch (_) {}
   app.quit();
+  // مطرقة أخيرة: إن لم يخرج خلال 1.5 ثانية (معلّق لأي سبب) اخرج قسرًا
+  setTimeout(() => {
+    try { app.exit(0); } catch (_) { process.exit(0); }
+  }, 1500).unref();
 }
 
 app.on('before-quit', () => {

@@ -41,11 +41,14 @@ function register(ctx) {
   });
 
   ipcMain.handle('adhan:test', () => ctx.playAdhan());
+  ipcMain.handle('adhan:stop', () => windows.sendToBackground('adhan:stop'));
+  ipcMain.handle('adhan:volume:preview', (e, v) => windows.sendToBackground('adhan:volume', v));
   ipcMain.handle('app:quit', () => ctx.quit());
 
   // من النافذة الخلفية
   ipcMain.on('tray:image', (e, dataUrl) => tray.setImage(dataUrl));
   ipcMain.on('bg:ready', () => ctx.onBgReady());
+  ipcMain.on('adhan:error', (e, msg) => ctx.onAudioError && ctx.onAudioError(msg));
 }
 
 module.exports = { register };

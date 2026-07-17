@@ -32,11 +32,17 @@ contextBridge.exposeInMainWorld('zn', {
   testAdhan: () => ipcRenderer.invoke('adhan:test'),
   quit: () => ipcRenderer.invoke('app:quit'),
 
+  stopAdhan: () => ipcRenderer.invoke('adhan:stop'),
+  previewVolume: (v) => ipcRenderer.invoke('adhan:volume:preview', v),
+
   // خاص بالنافذة الخلفية
   bg: {
     ready: () => ipcRenderer.send('bg:ready'),
     onTrayRender: (cb) => ipcRenderer.on('tray:render', (_e, spec) => cb(spec)),
     sendTrayImage: (dataUrl) => ipcRenderer.send('tray:image', dataUrl),
     onAdhanPlay: (cb) => ipcRenderer.on('adhan:play', (_e, opt) => cb(opt)),
+    onAdhanStop: (cb) => ipcRenderer.on('adhan:stop', () => cb()),
+    onAdhanVolume: (cb) => ipcRenderer.on('adhan:volume', (_e, v) => cb(v)),
+    sendAudioError: (msg) => ipcRenderer.send('adhan:error', msg),
   },
 });
