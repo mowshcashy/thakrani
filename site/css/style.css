@@ -206,8 +206,9 @@ img { max-width: 100%; }
 }
 
 .hero-title {
-  font-size: clamp(48px, 7vw, 92px);
-  line-height: 1.12;
+  /* مقاس يُبقي «على سطح مكتبك» سطرًا واحدًا في عمود البطل */
+  font-size: clamp(42px, 5.6vw, 72px);
+  line-height: 1.15;
   color: var(--ink);
 }
 .hero-title .accent { color: var(--green); }
@@ -475,8 +476,11 @@ img { max-width: 100%; }
   flex-direction: column;
 }
 .shot-card:hover { transform: translateY(-8px) rotate(.4deg); }
-.shot-card > div:first-child { flex: 1; display: flex; flex-direction: column; }
-.shot-card > div { border-radius: 14px; overflow: hidden; }
+/* بطاقات معاينة التطبيق: الودجت تملأ البطاقة وقائمة الصلوات تتوزع فلا يبقى فراغ ميت */
+.shot-app > .app-widget { flex: 1; display: flex; flex-direction: column; }
+.shot-app .app-content { flex: 1; display: flex; flex-direction: column; }
+.shot-app .app-prayer-list { flex: 1; justify-content: space-evenly; }
+.shot-app .app-content-next { justify-content: center; }
 .shot-card img { border-radius: 14px; display: block; width: 100%; }
 .shot-cap { font-size: 14px; color: var(--ink-soft); margin-top: 14px; text-align: center; }
 .shot-mini-app {
@@ -823,6 +827,8 @@ img { max-width: 100%; }
 
 /* ─── الأسئلة الشائعة ─── */
 .faq { padding-block: 100px; }
+/* رأس القسم على نفس عمود القائمة الموسّطة حتى لا ينزاح عنها */
+.faq .sec-head { max-width: 780px; margin-inline: auto; }
 .faq-list { max-width: 780px; margin-inline: auto; }
 .faq-item { border-top: 1px solid var(--line); }
 .faq-item:last-child { border-bottom: 1px solid var(--line); }
@@ -837,17 +843,18 @@ img { max-width: 100%; }
   transition: color .25s;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
+/* سهم ⌄ للأسفل عند الإغلاق و ⌃ للأعلى عند الفتح — حدود فيزيائية كي لا يرتبك اتجاه RTL */
 .faq-item summary::after {
   content: '';
   flex: none;
-  width: 14px; height: 14px;
-  border-inline-end: 2px solid var(--copper);
+  width: 11px; height: 11px;
+  border-left: 2px solid var(--copper);
   border-bottom: 2px solid var(--copper);
-  transform: rotate(45deg) translate(-2px, -2px);
+  transform: rotate(-45deg) translateY(-3px);
   transition: transform .3s var(--ease);
-  margin-inline-end: 4px;
+  margin-inline-end: 6px;
 }
-.faq-item[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.faq-item[open] summary::after { transform: rotate(135deg) translateY(-2px); }
 .faq-item summary:hover { color: var(--green); }
 .faq-a {
   padding: 0 6px 24px;
@@ -901,10 +908,16 @@ img { max-width: 100%; }
   .arc-t .v { font-size: 12px; }
   .arc-t .n { font-size: 11px; }
   .dl-card { padding: 50px 26px; }
-  .hero-title { font-size: 50px; }
+  .hero-title { font-size: 46px; }
   .behind-body p { font-size: 16px; }
   .behind-types li { font-size: 16px; }
   .faq-item summary { font-size: 17px; }
+  /* الودجت التجريبية: شريطها العلوي يزدحم على الشاشات الضيقة */
+  .app-actions { display: none; }
+  .app-segment button { padding: 4px 7px; font-size: 11px; }
+  .app-brand { font-size: 14px; }
+  .behind, .faq { padding-block: 70px; }
+  .shots { padding-block: 70px 90px; }
 }
 
 /* تقليل الحركة */

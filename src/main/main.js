@@ -63,7 +63,7 @@ async function init() {
   windows.createWidget();
 
   tray.initTray({
-    onToggle: () => windows.toggleWidget(),
+    onToggle: (bounds) => windows.toggleWidget(bounds),
     onOpenSettings: () => windows.openSettings(),
     onRefresh: () => refresh(),
     onQuit: () => quit(),
@@ -123,6 +123,17 @@ async function init() {
       console.log('SMOKE cities=', p.cityNames.length, 'city=', p.city,
         'next=', p.next && p.next.name, p.next && p.next.time, 'online=', p.online);
       console.log('SMOKE lastError=', p.lastError);
+      {
+        // تحقّق الإرساء: المسافة عن حافتي العمل السفلية واليمنى (المتوقع 12/12)
+        const { screen: scr } = require('electron');
+        const wgt = windows.getWidget();
+        if (wgt) {
+          const [wx, wy] = wgt.getPosition();
+          const [ww, wh] = wgt.getSize();
+          const wa = scr.getPrimaryDisplay().workArea;
+          console.log('SMOKE dock right=', wa.x + wa.width - (wx + ww), 'bottom=', wa.y + wa.height - (wy + wh));
+        }
+      }
       const shotDir = process.env.ZN_SHOT_DIR;
       const fs = require('fs');
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));

@@ -17,6 +17,7 @@ let widgetWin = null;
 let settingsWin = null;
 let bgWin = null;
 let miniWin = null;
+let lastBlurHideAt = 0; // للتفريق بين «نقرة الأيقونة أغلقتها» وطلب فتح جديد
 
 const DEFAULT_WIDGET_SIZE = { width: 340, height: 300 };
 const DEFAULT_MINI_SIZE = { width: 210, height: 60 };
@@ -74,16 +75,13 @@ function createWidget() {
 
   positionWidget();
 
-  // حفظ الموضع عند التحريك
-  let moveTimer = null;
-  widgetWin.on('move', () => {
-    clearTimeout(moveTimer);
-    moveTimer = setTimeout(() => {
-      if (widgetWin && !widgetWin.isDestroyed()) {
-        const [x, y] = widgetWin.getPosition();
-        store.set({ widgetBounds: { x, y } });
-      }
-    }, 400);
+  // سلوك النافذة المنبثقة: النقر خارجها يخفيها — إلا إذا ثبّتها المستخدم (دبوس)
+  widgetWin.on('blur', () => {
+    if (store.get('widgetPinned')) return;
+    if (widgetWin && !widgetWin.isDestroyed() && widgetWin.isVisible()) {
+      widgetWin.hide();
+      lastBlurHideAt = Date.now();
+    }
   });
 
   widgetWin.on('closed', () => {
@@ -93,21 +91,28 @@ function createWidget() {
   return widgetWin;
 }
 
-function positionWidget() {
+/*
+ * إرساء الودجت أسفل الشاشة فوق شريط المهام بجانب الساعة —
+ * مثل نوافذ ويندوز المنبثقة (الطقس/الصوت). تُمرَّر حدود أيقونة الـtray
+ * عند النقر عليها لتتمركز الودجت فوقها مباشرة.
+ */
+function positionWidget(trayBounds) {
   if (!widgetWin || widgetWin.isDestroyed()) return;
-  const saved = store.get('widgetBounds');
+  const disp = trayBounds && Number.isFinite(trayBounds.x)
+    ? screen.getDisplayNearestPoint({ x: trayBounds.x, y: trayBounds.y })
+    : screen.getPrimaryDisplay();
+  const wa = disp.workArea;
   const [w, h] = widgetWin.getSize();
-  if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
-    // تأكّد أنها ضمن حدود شاشة متاحة
-    const disp = screen.getDisplayNearestPoint({ x: saved.x, y: saved.y });
-    const wa = disp.workArea;
-    const x = Math.min(Math.max(saved.x, wa.x), wa.x + wa.width - w);
-    const y = Math.min(Math.max(saved.y, wa.y), wa.y + wa.height - h);
-    widgetWin.setPosition(Math.round(x), Math.round(y));
-  } else {
-    const wa = screen.getPrimaryDisplay().workArea;
-    widgetWin.setPosition(wa.x + wa.width - w - 16, wa.y + wa.height - h - 16);
+
+  // أفقيًا: فوق أيقونة الساعة إن عُرفت، وإلا أقصى اليمين
+  let x = wa.x + wa.width - w - 12;
+  if (trayBounds && Number.isFinite(trayBounds.x)) {
+    x = Math.round(trayBounds.x + (trayBounds.width || 0) / 2 - w / 2);
+    x = Math.min(Math.max(x, wa.x + 8), wa.x + wa.width - w - 8);
   }
+  // رأسيًا: ملاصقة لأعلى شريط المهام
+  const y = wa.y + wa.height - h - 12;
+  widgetWin.setPosition(Math.round(x), Math.round(y));
 }
 
 // إظهار نافذة بعد اكتمال تحميل محتواها فقط (يمنع الوميض الأبيض عند الإقلاع)
@@ -122,9 +127,9 @@ function showWhenReady(win, showFn) {
   }
 }
 
-function showWidget() {
+function showWidget(trayBounds) {
   createWidget();
-  positionWidget();
+  positionWidget(trayBounds);
   showWhenReady(widgetWin, () => {
     widgetWin.show();
     widgetWin.focus();
@@ -135,11 +140,14 @@ function hideWidget() {
   if (widgetWin && !widgetWin.isDestroyed()) widgetWin.hide();
 }
 
-function toggleWidget() {
+function toggleWidget(trayBounds) {
   if (widgetWin && !widgetWin.isDestroyed() && widgetWin.isVisible()) {
     hideWidget();
   } else {
-    showWidget();
+    // نقرة الأيقونة والودجت مفتوحة: يفقدها التركيز فتختفي قبل وصول النقرة —
+    // لا تعِد فتحها وإلا استحال إغلاقها من الأيقونة
+    if (Date.now() - lastBlurHideAt < 350) return;
+    showWidget(trayBounds);
   }
 }
 

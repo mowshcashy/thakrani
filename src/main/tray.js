@@ -28,8 +28,9 @@ function initTray(h) {
   if (tray) return tray;
   tray = new Tray(initialImage());
   tray.setToolTip('ذكِّرني — مواقيت الصلاة');
-  tray.on('click', () => handlers.onToggle && handlers.onToggle());
-  tray.on('double-click', () => handlers.onToggle && handlers.onToggle());
+  // حدث النقر يمرر حدود الأيقونة → تُفتح الودجت فوقها مباشرة كنافذة منبثقة
+  tray.on('click', (_e, bounds) => handlers.onToggle && handlers.onToggle(bounds));
+  tray.on('double-click', (_e, bounds) => handlers.onToggle && handlers.onToggle(bounds));
   return tray;
 }
 

@@ -173,6 +173,17 @@ compute();
 tick();
 setInterval(tick, 1000);
 
+/* ───────── رقم الإصدار من GitHub (لا يَقدُم أبدًا) ───────── */
+fetch('https://api.github.com/repos/mowshcashy/thakrani/releases/latest')
+  .then((r) => r.json())
+  .then((r) => {
+    const tag = r && r.tag_name;
+    if (!tag) return;
+    const el = document.getElementById('dlVer');
+    if (el) el.textContent = 'الإصدار ' + ar(tag.replace(/^v/, '')).replace(/\./g, '٫');
+  })
+  .catch(() => {});
+
 /* ───────── حركات الظهور ───────── */
 const io = new IntersectionObserver(
   (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }),
