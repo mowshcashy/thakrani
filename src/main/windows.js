@@ -19,6 +19,9 @@ let bgWin = null;
 let miniWin = null;
 let appWin = null;
 let desktopWin = null;
+let adhkarWin = null;
+let adhkarAnchor = null; // ارتساء ثابت لودجت الأذكار
+let adhkarProgrammatic = false;
 let lastBlurHideAt = 0; // للتفريق بين «نقرة الأيقونة أغلقتها» وطلب فتح جديد
 let lastWidgetShowAt = 0; // لتجاهل وميض التركيز العابر لحظة الإظهار
 let miniAnchor = null; // {right, top} نقطة ارتساء ثابتة للمصغّرة (تمنع الانحراف)
@@ -351,11 +354,31 @@ function setMiniEnabled(enabled) {
 
 const DEFAULT_DESKTOP_SIZE = { width: 340, height: 400 };
 
+/*
+ * «إظهار سطح المكتب» (Win+D أو زر زاوية شريط المهام) يُصغّر كل النوافذ.
+ * ودجت سطح المكتب يجب أن تبقى ظاهرة — نعيد إظهارها فورًا، ومراقب دوري
+ * يضمن ظهورها مهما كانت الطريقة التي أخفتها بها.
+ */
+function keepOnDesktop(win, isEnabled) {
+  const reshow = () => {
+    if (!win || win.isDestroyed() || !isEnabled()) return;
+    try {
+      if (win.isMinimized()) win.restore();
+      if (!win.isVisible()) win.showInactive();
+    } catch (_) {}
+  };
+  win.on('minimize', () => setTimeout(reshow, 60));
+  win.on('hide', () => setTimeout(reshow, 60));
+  const iv = setInterval(reshow, 1500);
+  win.on('closed', () => clearInterval(iv));
+}
+
 function createDesktop() {
   if (desktopWin && !desktopWin.isDestroyed()) return desktopWin;
+  const side = desktopSide();
   desktopWin = new BrowserWindow({
-    width: DEFAULT_DESKTOP_SIZE.width,
-    height: DEFAULT_DESKTOP_SIZE.height,
+    width: side,
+    height: side, // مربّعة
     frame: false,
     transparent: true,
     resizable: false,
@@ -383,7 +406,9 @@ function createDesktop() {
 
   attachDebug(desktopWin, 'desktop');
   desktopWin.loadFile(paths.rendererFile('desktop', 'index.html'));
+  try { desktopWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
   positionDesktop();
+  keepOnDesktop(desktopWin, () => store.get('desktopEnabled'));
 
   let moveTimer = null;
   desktopWin.on('move', () => {
@@ -434,18 +459,34 @@ function setDesktopEnabled(enabled) {
   else hideDesktop();
 }
 
-function resizeDesktop(w, h) {
-  if (!desktopWin || desktopWin.isDestroyed()) return;
+function clampOpacity(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(1, Math.max(0.35, n)) : 0.92;
+}
+
+/** طول ضلع المربّع كما اختاره المستخدم (محصور ضمن حدود معقولة والشاشة). */
+function desktopSide() {
   const wa = screen.getPrimaryDisplay().workArea;
-  const width = Math.min(Math.max(Math.round(w || DEFAULT_DESKTOP_SIZE.width), 260), 520);
-  const height = Math.min(Math.max(Math.round(h || DEFAULT_DESKTOP_SIZE.height), 220), wa.height - 40);
+  const raw = parseInt(store.get('desktopSize'), 10) || 320;
+  return Math.min(Math.max(raw, 220), Math.min(560, wa.height - 60));
+}
+
+/** يطبّق حجم المربّع الجديد مع إبقاء الركن العلوي الأيمن ثابتًا. */
+function applyDesktopSize() {
+  if (!desktopWin || desktopWin.isDestroyed()) return;
+  const side = desktopSide();
   const [ow, oh] = desktopWin.getSize();
-  if (width === ow && height === oh) return; // بلا تغيير → لا تلمس النافذة
+  if (side === ow && side === oh) return;
+  const wa = screen.getPrimaryDisplay().workArea;
   const [x, y] = desktopWin.getPosition();
-  // ثبّت الركن العلوي الأيمن، وابقَ داخل الشاشة
-  const nx = Math.min(Math.max(x + (ow - width), wa.x), wa.x + wa.width - width);
-  const ny = Math.min(Math.max(y, wa.y), wa.y + wa.height - height);
-  desktopWin.setBounds({ x: Math.round(nx), y: Math.round(ny), width, height });
+  const nx = Math.min(Math.max(x + (ow - side), wa.x), wa.x + wa.width - side);
+  const ny = Math.min(Math.max(y, wa.y), wa.y + wa.height - side);
+  desktopWin.setBounds({ x: Math.round(nx), y: Math.round(ny), width: side, height: side });
+}
+
+function applyDesktopOpacity() {
+  if (!desktopWin || desktopWin.isDestroyed()) return;
+  try { desktopWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
 }
 
 function resetDesktopPosition() {
@@ -456,6 +497,146 @@ function resetDesktopPosition() {
   }
   positionDesktop();
   if (!desktopWin.isVisible()) desktopWin.showInactive();
+}
+
+// ---------- ودجت الأذكار لسطح المكتب ----------
+
+function adhkarWidth() {
+  const wa = screen.getPrimaryDisplay().workArea;
+  const raw = parseInt(store.get('adhkarWidgetSize'), 10) || 360;
+  return Math.min(Math.max(raw, 260), Math.min(560, wa.width - 60));
+}
+
+function createAdhkarWidget() {
+  if (adhkarWin && !adhkarWin.isDestroyed()) return adhkarWin;
+  adhkarWin = new BrowserWindow({
+    width: adhkarWidth(),
+    height: 220,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    movable: true,
+    alwaysOnTop: false, // ترسو على سطح المكتب مثل أختها
+    skipTaskbar: true,
+    focusable: false,
+    fullscreenable: false,
+    maximizable: false,
+    minimizable: false,
+    hasShadow: false,
+    show: false,
+    backgroundColor: '#00000000',
+    webPreferences: baseWebPrefs(),
+  });
+  if (process.platform === 'darwin') {
+    try {
+      adhkarWin.setAlwaysOnTop(true, 'desktop');
+      adhkarWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false });
+    } catch (_) {}
+  }
+  attachDebug(adhkarWin, 'adhkar-widget');
+  adhkarWin.loadFile(paths.rendererFile('adhkar-widget', 'index.html'));
+  try { adhkarWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
+  positionAdhkarWidget();
+  keepOnDesktop(adhkarWin, () => store.get('adhkarWidgetEnabled'));
+
+  let moveTimer = null;
+  adhkarWin.on('move', () => {
+    if (adhkarProgrammatic) return;
+    clearTimeout(moveTimer);
+    moveTimer = setTimeout(() => {
+      if (adhkarWin && !adhkarWin.isDestroyed()) {
+        const [x, y] = adhkarWin.getPosition();
+        const [w] = adhkarWin.getSize();
+        adhkarAnchor = { right: x + w, top: y };
+        store.set({ adhkarWidgetBounds: { x, y } });
+      }
+    }, 400);
+  });
+  adhkarWin.on('closed', () => {
+    adhkarWin = null;
+  });
+  return adhkarWin;
+}
+
+function markAdhkarProgrammatic() {
+  adhkarProgrammatic = true;
+  setTimeout(() => { adhkarProgrammatic = false; }, 250);
+}
+
+function positionAdhkarWidget() {
+  if (!adhkarWin || adhkarWin.isDestroyed()) return;
+  const saved = store.get('adhkarWidgetBounds');
+  const [w, h] = adhkarWin.getSize();
+  let x;
+  let y;
+  if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+    const wa = screen.getDisplayNearestPoint({ x: saved.x, y: saved.y }).workArea;
+    x = Math.min(Math.max(saved.x, wa.x), wa.x + wa.width - w);
+    y = Math.min(Math.max(saved.y, wa.y), wa.y + wa.height - h);
+  } else {
+    const wa = screen.getPrimaryDisplay().workArea;
+    x = wa.x + wa.width - w - 40;
+    y = wa.y + 40 + desktopSide() + 20; // أسفل ودجت المواقيت
+    if (y + h > wa.y + wa.height) y = wa.y + 40;
+  }
+  x = Math.round(x);
+  y = Math.round(y);
+  markAdhkarProgrammatic();
+  adhkarWin.setPosition(x, y);
+  adhkarAnchor = { right: x + w, top: y };
+}
+
+/** ارتفاع الودجت يتبع طول الذكر — بارتساء ثابت كي لا تزحف. */
+function resizeAdhkarWidget(h) {
+  if (!adhkarWin || adhkarWin.isDestroyed()) return;
+  const wa = screen.getPrimaryDisplay().workArea;
+  const width = adhkarWidth();
+  const height = Math.min(Math.max(Math.round(h || 220), 140), wa.height - 60);
+  const [ow, oh] = adhkarWin.getSize();
+  if (width === ow && height === oh) return;
+  if (!adhkarAnchor) {
+    const [cx, cy] = adhkarWin.getPosition();
+    adhkarAnchor = { right: cx + ow, top: cy };
+  }
+  let x = adhkarAnchor.right - width;
+  let y = adhkarAnchor.top;
+  x = Math.min(Math.max(x, wa.x), wa.x + wa.width - width);
+  y = Math.min(Math.max(y, wa.y), wa.y + wa.height - height);
+  markAdhkarProgrammatic();
+  adhkarWin.setBounds({ x: Math.round(x), y: Math.round(y), width, height });
+}
+
+function showAdhkarWidget() {
+  createAdhkarWidget();
+  positionAdhkarWidget();
+  showWhenReady(adhkarWin, () => adhkarWin.showInactive());
+}
+
+function hideAdhkarWidget() {
+  if (adhkarWin && !adhkarWin.isDestroyed()) adhkarWin.hide();
+}
+
+function setAdhkarWidgetEnabled(enabled) {
+  if (enabled) showAdhkarWidget();
+  else hideAdhkarWidget();
+}
+
+function resetAdhkarWidgetPosition() {
+  store.set({ adhkarWidgetBounds: null });
+  adhkarAnchor = null;
+  if (!adhkarWin || adhkarWin.isDestroyed()) {
+    showAdhkarWidget();
+    return;
+  }
+  positionAdhkarWidget();
+  if (!adhkarWin.isVisible()) adhkarWin.showInactive();
+}
+
+function applyAdhkarWidgetSize() {
+  if (!adhkarWin || adhkarWin.isDestroyed()) return;
+  const [, h] = adhkarWin.getSize();
+  resizeAdhkarWidget(h);
+  try { adhkarWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
 }
 
 // ---------- النافذة الخلفية (أيقونة tray + أذان) ----------
@@ -484,7 +665,7 @@ function createBackground() {
 // ---------- بثّ عام ----------
 
 function broadcast(channel, payload) {
-  for (const win of [widgetWin, bgWin, miniWin, appWin, desktopWin]) {
+  for (const win of [widgetWin, bgWin, miniWin, appWin, desktopWin, adhkarWin]) {
     if (win && !win.isDestroyed()) {
       win.webContents.send(channel, payload);
     }
@@ -508,7 +689,14 @@ module.exports = {
   hideDesktop,
   setDesktopEnabled,
   resetDesktopPosition,
-  resizeDesktop,
+  applyDesktopSize,
+  applyDesktopOpacity,
+  showAdhkarWidget,
+  hideAdhkarWidget,
+  setAdhkarWidgetEnabled,
+  resetAdhkarWidgetPosition,
+  resizeAdhkarWidget,
+  applyAdhkarWidgetSize,
   createBackground,
   createMini,
   showMini,
@@ -524,4 +712,5 @@ module.exports = {
   getMini: () => miniWin,
   getApp: () => appWin,
   getDesktop: () => desktopWin,
+  getAdhkarWidget: () => adhkarWin,
 };

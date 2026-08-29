@@ -47,7 +47,7 @@ function setTooltip(text) {
   if (tray) tray.setToolTip(text);
 }
 
-function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopEnabled, updateVersion } = {}) {
+function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopEnabled, adhkarWidgetEnabled, updateVersion } = {}) {
   if (!tray) return;
 
   // تجميع المدن ضمن مناطقها (قائمة فرعية لكل منطقة)
@@ -106,10 +106,16 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopE
       click: () => handlers.onResetMini && handlers.onResetMini(),
     },
     {
-      label: 'ودجت سطح المكتب',
+      label: 'ودجت المواقيت (سطح المكتب)',
       type: 'checkbox',
       checked: !!desktopEnabled,
       click: () => handlers.onToggleDesktop && handlers.onToggleDesktop(!desktopEnabled),
+    },
+    {
+      label: 'ودجت الأذكار (سطح المكتب)',
+      type: 'checkbox',
+      checked: !!adhkarWidgetEnabled,
+      click: () => handlers.onToggleAdhkarWidget && handlers.onToggleAdhkarWidget(!adhkarWidgetEnabled),
     },
     { type: 'separator' },
     { label: 'تحديث المواقيت الآن', click: () => handlers.onRefresh && handlers.onRefresh() },

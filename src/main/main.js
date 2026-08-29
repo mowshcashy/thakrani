@@ -76,6 +76,7 @@ async function init() {
     onInstallUpdate: () => updater.installNow(),
     onOpenApp: (route) => windows.openApp(route),
     onToggleDesktop: (v) => applySettings({ desktopEnabled: v }),
+    onToggleAdhkarWidget: (v) => applySettings({ adhkarWidgetEnabled: v }),
   });
 
   // التحديث التلقائي (يعمل في النسخة المثبَّتة فقط)
@@ -110,8 +111,9 @@ async function init() {
 
   // الودجت المصغّر الثابت (إن كان مفعّلًا)
   if (store.get('miniEnabled')) windows.showMini();
-  // ودجت سطح المكتب (إن كان مفعّلًا)
+  // ودجتات سطح المكتب (إن كانت مفعّلة)
   if (store.get('desktopEnabled')) windows.showDesktop();
+  if (store.get('adhkarWidgetEnabled')) windows.showAdhkarWidget();
 
   // تذكير الأذكار حسب إعدادات المستخدم
   adhkarReminder.apply(store.get('adhkarReminder'), () => windows.openApp('adhkar'));
@@ -187,11 +189,31 @@ async function init() {
           const mw = windows.getMini();
           if (mw) fs.writeFileSync(path.join(shotDir, 'mini.png'), (await mw.webContents.capturePage()).toPNG());
 
-          // ودجت سطح المكتب
+          // ودجتات سطح المكتب — بحجمين للتأكد من التحجيم
           windows.showDesktop();
-          await wait(1200);
+          windows.showAdhkarWidget();
+          await wait(1600);
           const dw = windows.getDesktop();
-          if (dw) fs.writeFileSync(path.join(shotDir, 'desktop.png'), (await dw.webContents.capturePage()).toPNG());
+          if (dw) {
+            fs.writeFileSync(path.join(shotDir, 'desktop.png'), (await dw.webContents.capturePage()).toPNG());
+            const [dwW, dwH] = dw.getSize();
+            console.log('SMOKE desktop size=', dwW + 'x' + dwH, dwW === dwH ? '(مربّعة ✓)' : '(ليست مربّعة ✗)');
+            state.setSettings({ desktopSize: 480 });
+            windows.applyDesktopSize();
+            await wait(900);
+            const [bw, bh] = dw.getSize();
+            console.log('SMOKE desktop big=', bw + 'x' + bh);
+            fs.writeFileSync(path.join(shotDir, 'desktop-big.png'), (await dw.webContents.capturePage()).toPNG());
+            state.setSettings({ desktopSize: 320 });
+            windows.applyDesktopSize();
+            await wait(600);
+          }
+          const awin = windows.getAdhkarWidget();
+          if (awin) {
+            fs.writeFileSync(path.join(shotDir, 'adhkar-widget.png'), (await awin.webContents.capturePage()).toPNG());
+            const [aw, ah] = awin.getSize();
+            console.log('SMOKE adhkar widget size=', aw + 'x' + ah);
+          }
 
           // نافذة التطبيق: كل صفحة
           const aw = windows.openApp('times');
@@ -329,6 +351,7 @@ function updateTray(payload) {
     viewMode: payload.settings.viewMode,
     miniEnabled: payload.settings.miniEnabled,
     desktopEnabled: payload.settings.desktopEnabled,
+    adhkarWidgetEnabled: payload.settings.adhkarWidgetEnabled,
     updateVersion: updater.readyVersion(),
   });
 }
@@ -362,6 +385,15 @@ function applySettings(patch) {
   }
   if (patch && typeof patch.desktopEnabled === 'boolean') {
     windows.setDesktopEnabled(patch.desktopEnabled);
+  }
+  if (patch && typeof patch.adhkarWidgetEnabled === 'boolean') {
+    windows.setAdhkarWidgetEnabled(patch.adhkarWidgetEnabled);
+  }
+  if (patch && patch.desktopSize !== undefined) windows.applyDesktopSize();
+  if (patch && patch.adhkarWidgetSize !== undefined) windows.applyAdhkarWidgetSize();
+  if (patch && patch.desktopOpacity !== undefined) {
+    windows.applyDesktopOpacity();
+    windows.applyAdhkarWidgetSize();
   }
   if (patch && patch.adhkarReminder) {
     adhkarReminder.apply(after.adhkarReminder, () => windows.openApp('adhkar'));

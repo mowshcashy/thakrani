@@ -40,7 +40,12 @@ function register(ctx) {
 
   // ودجت سطح المكتب
   ipcMain.handle('desktop:reset', () => windows.resetDesktopPosition());
-  ipcMain.handle('desktop:resize', (e, { w, h }) => windows.resizeDesktop(w, h));
+
+  // ودجت الأذكار لسطح المكتب
+  ipcMain.handle('adhkarw:pool', () => content.adhkarPool());
+  ipcMain.handle('adhkarw:resize', (e, h) => windows.resizeAdhkarWidget(h));
+  ipcMain.handle('adhkarw:hide', () => ctx.applySettings({ adhkarWidgetEnabled: false }));
+  ipcMain.handle('adhkarw:reset', () => windows.resetAdhkarWidgetPosition());
   ipcMain.handle('desktop:hide', () => ctx.applySettings({ desktopEnabled: false }));
 
   ipcMain.handle('adhan:pick', async () => {

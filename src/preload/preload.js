@@ -42,7 +42,12 @@ contextBridge.exposeInMainWorld('zn', {
   // ودجت سطح المكتب
   resetDesktop: () => ipcRenderer.invoke('desktop:reset'),
   hideDesktop: () => ipcRenderer.invoke('desktop:hide'),
-  resizeDesktop: (w, h) => ipcRenderer.invoke('desktop:resize', { w, h }),
+
+  // ودجت الأذكار لسطح المكتب
+  adhkarPool: () => ipcRenderer.invoke('adhkarw:pool'),
+  resizeAdhkarWidget: (h) => ipcRenderer.invoke('adhkarw:resize', h),
+  hideAdhkarWidget: () => ipcRenderer.invoke('adhkarw:hide'),
+  resetAdhkarWidget: () => ipcRenderer.invoke('adhkarw:reset'),
   pickAdhan: () => ipcRenderer.invoke('adhan:pick'),
   testAdhan: () => ipcRenderer.invoke('adhan:test'),
   quit: () => ipcRenderer.invoke('app:quit'),

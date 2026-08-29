@@ -321,15 +321,46 @@ function renderSettings() {
           <div class="ltext"><span class="lbl">الودجت المصغّرة العائمة</span><span class="desc">شريط شفاف فوق النوافذ</span></div>
           ${sw('mini-enabled', s.miniEnabled)}
         </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">ودجتات سطح المكتب</div>
+      <div class="group">
         <div class="row">
-          <div class="ltext"><span class="lbl">ودجت سطح المكتب</span><span class="desc">بطاقة ترسو على سطح المكتب خلف نوافذك</span></div>
+          <div class="ltext"><span class="lbl">ودجت المواقيت</span><span class="desc">بطاقة مربّعة تبقى ظاهرة على سطح المكتب</span></div>
           ${sw('desktop-enabled', s.desktopEnabled)}
+        </div>
+        <div class="row">
+          <div class="ltext"><span class="lbl">حجم ودجت المواقيت</span></div>
+          <div class="seg">
+            ${[[260, 'صغيرة'], [320, 'متوسطة'], [400, 'كبيرة'], [480, 'ضخمة']].map(([v, nm]) =>
+              `<button data-action="dsize-${v}" class="${(s.desktopSize || 320) === v ? 'active' : ''}">${nm}</button>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="row">
+          <div class="ltext"><span class="lbl">ودجت الأذكار</span><span class="desc">ذكر يتبدّل كل ٣٠ ثانية مع زرَّي السابق والتالي</span></div>
+          ${sw('adhkarw-enabled', s.adhkarWidgetEnabled)}
+        </div>
+        <div class="row">
+          <div class="ltext"><span class="lbl">عرض ودجت الأذكار</span></div>
+          <div class="seg">
+            ${[[300, 'ضيّقة'], [360, 'متوسطة'], [440, 'عريضة']].map(([v, nm]) =>
+              `<button data-action="asize-${v}" class="${(s.adhkarWidgetSize || 360) === v ? 'active' : ''}">${nm}</button>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="row">
+          <div class="ltext"><span class="lbl">مستوى الشفافية</span><span class="desc">كلما قلّ صارت أخف وألطف على الخلفية</span></div>
+          <input type="range" min="0.5" max="1" step="0.02" value="${s.desktopOpacity || 0.92}" data-action="desktop-opacity"/>
         </div>
         <div class="row">
           <div class="ltext"><span class="lbl">إعادة الودجتات لأماكنها</span><span class="desc">لو ضاعت أو خرجت عن الشاشة</span></div>
           <div class="btn-row">
             <button class="btn" data-action="reset-mini">المصغّرة</button>
-            <button class="btn" data-action="reset-desktop">سطح المكتب</button>
+            <button class="btn" data-action="reset-desktop">المواقيت</button>
+            <button class="btn" data-action="reset-adhkarw">الأذكار</button>
           </div>
         </div>
       </div>
@@ -519,6 +550,9 @@ main.addEventListener('click', async (e) => {
   if (a === 'rem-test') return window.zn.testDhikr();
   if (a === 'reset-mini') return window.zn.resetMini();
   if (a === 'reset-desktop') return window.zn.resetDesktop();
+  if (a === 'reset-adhkarw') return window.zn.resetAdhkarWidget();
+  if (a && a.startsWith('dsize-')) return patch({ desktopSize: parseInt(a.slice(6), 10) });
+  if (a && a.startsWith('asize-')) return patch({ adhkarWidgetSize: parseInt(a.slice(6), 10) });
   if (a === 'quit') return window.zn.quit();
 });
 
@@ -533,6 +567,8 @@ main.addEventListener('change', (e) => {
   if (a === 'autostart') return patch({ autoStart: el.checked });
   if (a === 'mini-enabled') return patch({ miniEnabled: el.checked });
   if (a === 'desktop-enabled') return patch({ desktopEnabled: el.checked });
+  if (a === 'adhkarw-enabled') return patch({ adhkarWidgetEnabled: el.checked });
+  if (a === 'desktop-opacity') return patch({ desktopOpacity: parseFloat(el.value) });
   if (a === 'rem-enabled') return patch({ adhkarReminder: { enabled: el.checked } });
   if (a === 'rem-every') return patch({ adhkarReminder: { everyMinutes: parseInt(el.value, 10) } });
   if (a === 'rem-from') return patch({ adhkarReminder: { quietFrom: el.value } });

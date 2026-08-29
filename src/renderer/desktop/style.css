@@ -1,89 +1,114 @@
-/* ودجت سطح المكتب — بطاقة زجاجية على طراز ودجتات ماك */
+/* ودجت المواقيت لسطح المكتب — بطاقة مربّعة زجاجية خفيفة على طراز ماك.
+   كل المقاسات بوحدة vmin ليتناسق كل شيء مع الحجم الذي يختاره المستخدم. */
 
-body { background: transparent; padding: 10px; overflow: hidden; }
+html, body { height: 100%; }
+body { background: transparent; overflow: hidden; }
 
 .dw {
   position: relative;
-  border-radius: 24px;
-  padding: 20px 22px 18px;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  border-radius: 7vmin;
+  padding: 5.5vmin 5.5vmin 4.5vmin;
   color: #fff;
   overflow: hidden;
-  /* زجاج داكن يبقى مقروءًا على أي خلفية سطح مكتب */
-  background:
-    linear-gradient(160deg, rgba(16, 58, 40, .82), rgba(6, 24, 16, .88));
-  backdrop-filter: blur(22px) saturate(1.25);
-  -webkit-backdrop-filter: blur(22px) saturate(1.25);
-  border: 1px solid rgba(255, 255, 255, .16);
-  box-shadow: 0 26px 60px -22px rgba(0, 0, 0, .75), inset 0 1px 0 rgba(255, 255, 255, .10);
+  display: flex;
+  flex-direction: column;
+  /* زجاج خفيف: تمرّ منه خلفية سطح المكتب بلطف */
+  background: linear-gradient(155deg, rgba(14, 46, 33, .52), rgba(5, 20, 14, .60));
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 6vmin 12vmin -5vmin rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .16);
   -webkit-app-region: drag;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
 }
 
 /* قوس محراب زخرفي خفيف */
 .dw::before {
   content: '';
   position: absolute;
-  top: -70px; inset-inline-start: 50%;
+  top: -18vmin; inset-inline-start: 50%;
   transform: translateX(50%);
-  width: 240px; height: 240px;
-  border-radius: 120px 120px 0 0;
-  border: 1px solid rgba(255, 255, 255, .09);
+  width: 62vmin; height: 62vmin;
+  border-radius: 31vmin 31vmin 0 0;
+  border: 1px solid rgba(255, 255, 255, .10);
   pointer-events: none;
 }
 
-.dw-head { display: flex; align-items: center; gap: 9px; }
-.dw-head img { width: 24px; height: 23px; object-fit: contain; }
+/* ─── الرأس ─── */
+.dw-head { display: flex; align-items: center; gap: 2vmin; flex: none; }
+.dw-head img { width: 5.6vmin; height: 5.4vmin; object-fit: contain; opacity: .95; }
 .dw-city {
-  font-size: 14px; font-weight: 700;
   margin-inline-start: auto;
-  background: rgba(255, 255, 255, .12);
-  border-radius: 999px; padding: 4px 12px;
+  font-size: 3.3vmin; font-weight: 700;
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 99vmin; padding: .9vmin 3vmin;
+  white-space: nowrap; max-width: 46%;
+  overflow: hidden; text-overflow: ellipsis;
 }
-.dw-brand { font-family: 'Thmanyah Display', serif; font-size: 17px; font-weight: 700; }
+.dw-hijri { font-family: 'Thmanyah Display', serif; font-size: 3.9vmin; font-weight: 700; }
 
-.dw-dates { margin-top: 14px; }
-.dw-hijri { font-family: 'Thmanyah Display', serif; font-size: 18px; font-weight: 700; }
-.dw-greg { font-size: 12px; opacity: .68; margin-top: 2px; }
-
-.dw-next { margin-top: 16px; text-align: center; }
-.dw-next .lbl { font-size: 12.5px; opacity: .7; }
+/* ─── الصلاة القادمة (قلب البطاقة) ─── */
+.dw-next {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  margin: 1vmin 0;
+}
+.dw-next .lbl { font-size: 3.2vmin; opacity: .72; }
 .dw-next .nm {
   font-family: 'Thmanyah Display', serif;
-  font-size: 40px; font-weight: 700; line-height: 1.25;
-  color: #7ce8b4;
+  font-size: 11vmin; font-weight: 700; line-height: 1.22;
+  color: #8bf0c0;
 }
-.dw-next .tm { font-size: 15px; opacity: .9; }
+.dw-next .tm { font-size: 3.6vmin; opacity: .9; margin-top: .3vmin; }
 .dw-next .cd {
-  font-size: 30px; font-weight: 900;
-  font-variant-numeric: tabular-nums; direction: ltr; letter-spacing: 1px;
-  margin-top: 6px;
+  font-size: 8.2vmin; font-weight: 900;
+  font-variant-numeric: tabular-nums; direction: ltr;
+  letter-spacing: .2vmin; margin-top: 1.4vmin;
 }
 
-.dw-list { margin-top: 16px; display: flex; flex-direction: column; gap: 1px; }
-.dw-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 11px; border-radius: 10px;
-  font-size: 14px;
+/* ─── شريط الصلوات المضغوط ─── */
+.dw-strip {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: .6vmin;
+  padding-top: 3vmin;
+  border-top: 1px solid rgba(255, 255, 255, .14);
 }
-.dw-row .n { font-weight: 600; opacity: .92; }
-.dw-row .t { font-variant-numeric: tabular-nums; direction: ltr; opacity: .8; }
-.dw-row.is-next { background: rgba(124, 232, 180, .16); }
-.dw-row.is-next .n, .dw-row.is-next .t { color: #7ce8b4; opacity: 1; }
-.dw-row.passed { opacity: .45; }
+.dw-cell {
+  text-align: center;
+  padding: 1.2vmin .4vmin;
+  border-radius: 2.4vmin;
+  min-width: 0;
+}
+.dw-cell .n { font-size: 2.9vmin; opacity: .72; white-space: nowrap; }
+.dw-cell .t {
+  font-size: 3.1vmin; font-weight: 700;
+  font-variant-numeric: tabular-nums; direction: ltr;
+  margin-top: .3vmin; white-space: nowrap;
+}
+.dw-cell.is-next { background: rgba(139, 240, 192, .20); }
+.dw-cell.is-next .n, .dw-cell.is-next .t { color: #8bf0c0; opacity: 1; }
+.dw-cell.passed { opacity: .42; }
 
-.dw-foot {
-  margin-top: 14px; padding-top: 11px;
-  border-top: 1px solid rgba(255, 255, 255, .12);
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 11.5px; opacity: .6;
-}
+/* ─── زر الإغلاق ─── */
 .dw-close {
   -webkit-app-region: no-drag;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(255, 255, 255, .14); color: #fff;
-  display: grid; place-items: center; font-size: 13px; line-height: 1;
+  position: absolute; top: 2.4vmin; inset-inline-start: 2.4vmin;
+  width: 4.6vmin; height: 4.6vmin; min-width: 18px; min-height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .16); color: #fff;
+  display: grid; place-items: center;
+  font-size: 3vmin; line-height: 1;
   opacity: 0; transition: opacity .2s, background .2s;
 }
-.dw:hover .dw-close { opacity: .85; }
+.dw:hover .dw-close { opacity: .9; }
 .dw-close:hover { background: #c0603a; opacity: 1; }
 
-.dw.loading { display: grid; place-items: center; min-height: 200px; font-size: 13px; opacity: .8; }
+.dw.loading { align-items: center; justify-content: center; font-size: 3.4vmin; opacity: .85; }

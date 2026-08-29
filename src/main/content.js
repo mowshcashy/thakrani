@@ -94,4 +94,24 @@ function randomDhikr() {
   return item ? { title: cat.title, text: item.text, repeat: item.repeat } : null;
 }
 
-module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr };
+/** مجموعة أذكار قصيرة مناسبة لودجت سطح المكتب (نص معقول الطول). */
+let pool = null;
+function adhkarPool() {
+  if (pool) return pool;
+  const out = [];
+  for (const c of getAdhkar()) {
+    for (const it of c.items) {
+      const t = it.text.trim();
+      if (t.length >= 12 && t.length <= 240) out.push({ title: c.title, text: t, repeat: it.repeat });
+    }
+  }
+  // خلط ثابت لتنوّع العرض
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  pool = out;
+  return pool;
+}
+
+module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool };
