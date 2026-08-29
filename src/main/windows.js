@@ -18,6 +18,9 @@ let settingsWin = null;
 let bgWin = null;
 let miniWin = null;
 let lastBlurHideAt = 0; // للتفريق بين «نقرة الأيقونة أغلقتها» وطلب فتح جديد
+let lastWidgetShowAt = 0; // لتجاهل وميض التركيز العابر لحظة الإظهار
+let miniAnchor = null; // {right, top} نقطة ارتساء ثابتة للمصغّرة (تمنع الانحراف)
+let miniProgrammatic = false; // حركة سببها التطبيق لا المستخدم → لا تُحفظ
 
 const DEFAULT_WIDGET_SIZE = { width: 340, height: 300 };
 const DEFAULT_MINI_SIZE = { width: 210, height: 60 };
@@ -78,6 +81,8 @@ function createWidget() {
   // سلوك النافذة المنبثقة: النقر خارجها يخفيها — إلا إذا ثبّتها المستخدم (دبوس)
   widgetWin.on('blur', () => {
     if (store.get('widgetPinned')) return;
+    // ويندوز يُطلق blur عابرًا أحيانًا أثناء show/focus نفسه → تجاهله وإلا اختفت فور ظهورها
+    if (Date.now() - lastWidgetShowAt < 450) return;
     if (widgetWin && !widgetWin.isDestroyed() && widgetWin.isVisible()) {
       widgetWin.hide();
       lastBlurHideAt = Date.now();
@@ -131,6 +136,7 @@ function showWidget(trayBounds) {
   createWidget();
   positionWidget(trayBounds);
   showWhenReady(widgetWin, () => {
+    lastWidgetShowAt = Date.now();
     widgetWin.show();
     widgetWin.focus();
   });
@@ -146,20 +152,23 @@ function toggleWidget(trayBounds) {
   } else {
     // نقرة الأيقونة والودجت مفتوحة: يفقدها التركيز فتختفي قبل وصول النقرة —
     // لا تعِد فتحها وإلا استحال إغلاقها من الأيقونة
-    if (Date.now() - lastBlurHideAt < 350) return;
+    if (Date.now() - lastBlurHideAt < 450) return;
     showWidget(trayBounds);
   }
 }
 
 function resizeWidget(w, h) {
   if (!widgetWin || widgetWin.isDestroyed()) return;
-  const width = Math.round(w || DEFAULT_WIDGET_SIZE.width);
-  const height = Math.round(h || DEFAULT_WIDGET_SIZE.height);
-  const [x, y] = widgetWin.getPosition();
+  const maxH = screen.getPrimaryDisplay().workArea.height - 24;
+  const width = Math.min(Math.max(Math.round(w || DEFAULT_WIDGET_SIZE.width), 260), 520);
+  const height = Math.min(Math.max(Math.round(h || DEFAULT_WIDGET_SIZE.height), 180), maxH);
   const [ow, oh] = widgetWin.getSize();
-  widgetWin.setSize(width, height);
-  // حافظ على الركن السفلي الأيمن ثابتًا عند تغيّر الارتفاع
-  widgetWin.setPosition(x + (ow - width), y + (oh - height));
+  // الواجهة تقيس نفسها بعد كل رسم؛ إن لم يتغيّر المقاس فلا تلمس النافذة
+  // (تحريكها بلا داعٍ هو سبب الاهتزاز/الوميض)
+  if (width === ow && height === oh) return;
+  const [x, y] = widgetWin.getPosition();
+  // حافظ على الركن السفلي الأيمن ثابتًا (الودجت مرساة فوق شريط المهام)
+  widgetWin.setBounds({ x: x + (ow - width), y: y + (oh - height), width, height });
 }
 
 function setWidgetPinned(pinned) {
@@ -228,10 +237,13 @@ function createMini() {
 
   let moveTimer = null;
   miniWin.on('move', () => {
+    if (miniProgrammatic) return; // حركة من التطبيق (تغيّر مقاس) — لا تُحفظ ولا تغيّر الارتساء
     clearTimeout(moveTimer);
     moveTimer = setTimeout(() => {
       if (miniWin && !miniWin.isDestroyed()) {
         const [x, y] = miniWin.getPosition();
+        const [w] = miniWin.getSize();
+        miniAnchor = { right: x + w, top: y }; // المستخدم سحبها → ارتساء جديد
         store.set({ miniBounds: { x, y } });
       }
     }, 400);
@@ -242,20 +254,32 @@ function createMini() {
   return miniWin;
 }
 
+// يعلّم الحركة التالية بأنها برمجية (لئلا تُحفظ كموضع اختاره المستخدم)
+function markMiniProgrammatic() {
+  miniProgrammatic = true;
+  setTimeout(() => { miniProgrammatic = false; }, 250);
+}
+
 function positionMini() {
   if (!miniWin || miniWin.isDestroyed()) return;
   const saved = store.get('miniBounds');
   const [w, h] = miniWin.getSize();
+  let x;
+  let y;
   if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
-    const disp = screen.getDisplayNearestPoint({ x: saved.x, y: saved.y });
-    const wa = disp.workArea;
-    const x = Math.min(Math.max(saved.x, wa.x), wa.x + wa.width - w);
-    const y = Math.min(Math.max(saved.y, wa.y), wa.y + wa.height - h);
-    miniWin.setPosition(Math.round(x), Math.round(y));
+    const wa = screen.getDisplayNearestPoint({ x: saved.x, y: saved.y }).workArea;
+    x = Math.min(Math.max(saved.x, wa.x), wa.x + wa.width - w);
+    y = Math.min(Math.max(saved.y, wa.y), wa.y + wa.height - h);
   } else {
     const wa = screen.getPrimaryDisplay().workArea;
-    miniWin.setPosition(wa.x + wa.width - w - 16, wa.y + 16); // أعلى اليمين افتراضيًا
+    x = wa.x + wa.width - w - 16;
+    y = wa.y + 16; // أعلى اليمين افتراضيًا
   }
+  x = Math.round(x);
+  y = Math.round(y);
+  markMiniProgrammatic();
+  miniWin.setPosition(x, y);
+  miniAnchor = { right: x + w, top: y };
 }
 
 function showMini() {
@@ -270,12 +294,38 @@ function hideMini() {
 
 function resizeMini(w, h) {
   if (!miniWin || miniWin.isDestroyed()) return;
-  const [x, y] = miniWin.getPosition();
-  const [ow] = miniWin.getSize();
-  const width = Math.round(w || DEFAULT_MINI_SIZE.width);
-  const height = Math.round(h || DEFAULT_MINI_SIZE.height);
-  miniWin.setSize(width, height);
-  miniWin.setPosition(x + (ow - width), y); // ثبّت الحافة اليمنى
+  // سقف صارم: لو أخطأ القياس يومًا فلن تتضخّم النافذة ولن تزحف عبر الشاشة
+  const width = Math.min(Math.max(Math.round(w || DEFAULT_MINI_SIZE.width), 150), 460);
+  const height = Math.min(Math.max(Math.round(h || DEFAULT_MINI_SIZE.height), 40), 140);
+  const [ow, oh] = miniWin.getSize();
+  if (width === ow && height === oh) return; // لا تغيير → لا تلمس النافذة إطلاقًا
+
+  // احسب دائمًا من نقطة الارتساء الثابتة، لا من الموضع الحالي:
+  // القراءة من الموضع الحالي كانت تراكم انحراف بكسل مع كل رسم حتى تهرب النافذة.
+  if (!miniAnchor) {
+    const [cx, cy] = miniWin.getPosition();
+    miniAnchor = { right: cx + ow, top: cy };
+  }
+  let x = miniAnchor.right - width;
+  let y = miniAnchor.top;
+  const wa = screen.getDisplayNearestPoint({ x, y }).workArea;
+  x = Math.min(Math.max(x, wa.x), wa.x + wa.width - width);
+  y = Math.min(Math.max(y, wa.y), wa.y + wa.height - height);
+
+  markMiniProgrammatic();
+  miniWin.setBounds({ x: Math.round(x), y: Math.round(y), width, height });
+}
+
+/** يعيد المصغّرة إلى ركنها الافتراضي (أعلى اليمين) — لو ضاعت أو خرجت عن الشاشة. */
+function resetMiniPosition() {
+  store.set({ miniBounds: null });
+  miniAnchor = null;
+  if (!miniWin || miniWin.isDestroyed()) {
+    showMini();
+    return;
+  }
+  positionMini();
+  if (!miniWin.isVisible()) miniWin.showInactive();
 }
 
 // يطبّق حالة التفعيل (إنشاء/إظهار أو إخفاء)
@@ -337,6 +387,7 @@ module.exports = {
   showMini,
   hideMini,
   resizeMini,
+  resetMiniPosition,
   setMiniEnabled,
   broadcast,
   sendToBackground,

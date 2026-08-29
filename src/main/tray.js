@@ -28,9 +28,10 @@ function initTray(h) {
   if (tray) return tray;
   tray = new Tray(initialImage());
   tray.setToolTip('ذكِّرني — مواقيت الصلاة');
-  // حدث النقر يمرر حدود الأيقونة → تُفتح الودجت فوقها مباشرة كنافذة منبثقة
+  // حدث النقر يمرر حدود الأيقونة → تُفتح الودجت فوقها مباشرة كنافذة منبثقة.
+  // بلا مُعالج double-click: ويندوز يُطلق click مرتين + double-click، فتُبدَّل
+  // الودجت ثلاث مرات عند نقرتين سريعتين (هذا سبب «الفلك»).
   tray.on('click', (_e, bounds) => handlers.onToggle && handlers.onToggle(bounds));
-  tray.on('double-click', (_e, bounds) => handlers.onToggle && handlers.onToggle(bounds));
   return tray;
 }
 
@@ -94,6 +95,11 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, updateVe
       type: 'checkbox',
       checked: !!miniEnabled,
       click: () => handlers.onToggleMini && handlers.onToggleMini(!miniEnabled),
+    },
+    {
+      label: 'إعادة المصغّر إلى مكانه',
+      enabled: !!miniEnabled,
+      click: () => handlers.onResetMini && handlers.onResetMini(),
     },
     { type: 'separator' },
     { label: 'تحديث المواقيت الآن', click: () => handlers.onRefresh && handlers.onRefresh() },

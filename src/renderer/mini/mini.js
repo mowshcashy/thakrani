@@ -3,6 +3,7 @@
 
 const root = document.getElementById('root');
 let current = null;
+let lastSignature = null; // بصمة المحتوى الثابت — لتفادي إعادة رسم بلا تغيير
 
 const CRESCENT =
   '<img class="crescent" src="../../../assets/logos/tha-dark.svg" alt=""/>';
@@ -20,6 +21,7 @@ function nowClock() {
 
 function render() {
   const p = current;
+  lastSignature = signature(p);
   if (!p || !p.next) {
     root.innerHTML = `<div class="mini loading drag">جارٍ التحميل…</div>`;
     resize();
@@ -69,9 +71,21 @@ root.addEventListener('click', (e) => {
   if (btn && btn.dataset.action === 'hide') window.zn.hideMini();
 });
 
+/* بصمة البنية فقط — العدّاد والساعة يُحدَّثان نصيًا كل ثانية بلا إعادة بناء.
+   إعادة البناء تستدعي قياسًا وتغيير مقاس النافذة، وهو ما كان يُقلقل موضعها. */
+function signature(p) {
+  if (!p || !p.next) return 'empty';
+  return [p.settings.timeFormat, p.settings.theme, p.next.key, p.next.time, p.next.isTomorrow].join('|');
+}
+
 window.zn.onState((payload) => {
   current = payload;
   window.ZN.applyTheme(payload.settings.theme);
+  const sig = signature(payload);
+  if (sig === lastSignature) {
+    tick(); // لا تغيير بنيوي — حدّث الأرقام فقط
+    return;
+  }
   render();
 });
 

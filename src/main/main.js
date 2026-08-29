@@ -70,6 +70,7 @@ async function init() {
     onSetMode: (m) => applySettings({ viewMode: m }),
     onPickCity: (c) => applySettings({ city: c }),
     onToggleMini: (v) => applySettings({ miniEnabled: v }),
+    onResetMini: () => windows.resetMiniPosition(),
     onCheckUpdate: () => updater.checkNow(),
     onInstallUpdate: () => updater.installNow(),
   });
@@ -133,6 +134,28 @@ async function init() {
           const wa = scr.getPrimaryDisplay().workArea;
           console.log('SMOKE dock right=', wa.x + wa.width - (wx + ww), 'bottom=', wa.y + wa.height - (wy + wh));
         }
+      }
+      if (process.env.ZN_TEST_TOGGLE) {
+        // تبديل الودجت من الأيقونة: إظهار → إخفاء → إظهار (بلا فلك ولا التصاق)
+        const wg = windows.getWidget();
+        const seq = [];
+        for (let i = 0; i < 3; i++) {
+          windows.toggleWidget();
+          await new Promise((r) => setTimeout(r, 700));
+          seq.push(wg.isVisible() ? 'ظاهرة' : 'مخفية');
+        }
+        console.log('SMOKE TOGGLE', seq.join(' → '), '(المتوقع تناوب)');
+      }
+      if (process.env.ZN_TEST_DRIFT) {
+        // اختبار الانحراف: أجبر عدة تحديثات وقِس هل يزحف الموضع
+        const mw = windows.getMini();
+        const wg = windows.getWidget();
+        const before = { mini: mw && mw.getPosition(), widget: wg && wg.getPosition() };
+        for (let i = 0; i < 8; i++) state.recompute();
+        await new Promise((r) => setTimeout(r, 2500));
+        const after = { mini: mw && mw.getPosition(), widget: wg && wg.getPosition() };
+        const d = (a, b) => (a && b ? `${b[0] - a[0]},${b[1] - a[1]}` : 'n/a');
+        console.log('SMOKE DRIFT mini=', d(before.mini, after.mini), 'widget=', d(before.widget, after.widget), '(المتوقع 0,0)');
       }
       const shotDir = process.env.ZN_SHOT_DIR;
       const fs = require('fs');

@@ -3,6 +3,7 @@
 
 const root = document.getElementById('root');
 let current = null;
+let lastSignature = null; // بصمة المحتوى الثابت — لتفادي إعادة رسم بلا تغيير
 
 const ICON = {
   crescent: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 2A9.5 9.5 0 1 0 22 15.2 7.5 7.5 0 0 1 15.5 2z"/></svg>',
@@ -34,6 +35,7 @@ function render() {
   const s = p.settings;
   const fmt = s.timeFormat;
   const mode = s.viewMode;
+  lastSignature = signature(p);
 
   const header = `
     <div class="topbar drag">
@@ -192,10 +194,28 @@ root.addEventListener('click', (e) => {
   }
 });
 
+/* بصمة كل ما يظهر في البنية (عدا العدّادات التي تُحدَّث نصيًا كل ثانية).
+   الحالة تُبثّ كل ١٥ ثانية؛ إعادة بناء DOM بلا تغيير تُحدث وميضًا على نافذة شفافة. */
+function signature(p) {
+  const s = p.settings;
+  return JSON.stringify([
+    s.viewMode, s.timeFormat, s.theme, s.widgetPinned, s.iqamaOffset,
+    p.city, p.hijriDate && p.hijriDate.day, p.online, p.fetchedAt,
+    p.currentKey, p.next && p.next.key, p.next && p.next.isTomorrow,
+    p.prayers.map((x) => x.time).join(','), !!iqamaInfo(p),
+  ]);
+}
+
 // اشتراك التحديثات
 window.zn.onState((payload) => {
   current = payload;
   window.ZN.applyTheme(payload.settings.theme);
+  const sig = signature(payload);
+  if (sig === lastSignature) {
+    tickCountdown(); // لا شيء بنيوي تغيّر — اكتفِ بتحديث الأرقام
+    return;
+  }
+  lastSignature = sig;
   render();
 });
 
@@ -212,6 +232,9 @@ setInterval(tickCountdown, 1000);
 // التحميل الأولي
 (async () => {
   current = await window.zn.getState();
-  if (current) window.ZN.applyTheme(current.settings.theme);
+  if (current) {
+    window.ZN.applyTheme(current.settings.theme);
+    lastSignature = signature(current);
+  }
   render();
 })();
