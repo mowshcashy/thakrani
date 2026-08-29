@@ -1,0 +1,89 @@
+/* ودجت سطح المكتب — بطاقة زجاجية على طراز ودجتات ماك */
+
+body { background: transparent; padding: 10px; overflow: hidden; }
+
+.dw {
+  position: relative;
+  border-radius: 24px;
+  padding: 20px 22px 18px;
+  color: #fff;
+  overflow: hidden;
+  /* زجاج داكن يبقى مقروءًا على أي خلفية سطح مكتب */
+  background:
+    linear-gradient(160deg, rgba(16, 58, 40, .82), rgba(6, 24, 16, .88));
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  border: 1px solid rgba(255, 255, 255, .16);
+  box-shadow: 0 26px 60px -22px rgba(0, 0, 0, .75), inset 0 1px 0 rgba(255, 255, 255, .10);
+  -webkit-app-region: drag;
+}
+
+/* قوس محراب زخرفي خفيف */
+.dw::before {
+  content: '';
+  position: absolute;
+  top: -70px; inset-inline-start: 50%;
+  transform: translateX(50%);
+  width: 240px; height: 240px;
+  border-radius: 120px 120px 0 0;
+  border: 1px solid rgba(255, 255, 255, .09);
+  pointer-events: none;
+}
+
+.dw-head { display: flex; align-items: center; gap: 9px; }
+.dw-head img { width: 24px; height: 23px; object-fit: contain; }
+.dw-city {
+  font-size: 14px; font-weight: 700;
+  margin-inline-start: auto;
+  background: rgba(255, 255, 255, .12);
+  border-radius: 999px; padding: 4px 12px;
+}
+.dw-brand { font-family: 'Thmanyah Display', serif; font-size: 17px; font-weight: 700; }
+
+.dw-dates { margin-top: 14px; }
+.dw-hijri { font-family: 'Thmanyah Display', serif; font-size: 18px; font-weight: 700; }
+.dw-greg { font-size: 12px; opacity: .68; margin-top: 2px; }
+
+.dw-next { margin-top: 16px; text-align: center; }
+.dw-next .lbl { font-size: 12.5px; opacity: .7; }
+.dw-next .nm {
+  font-family: 'Thmanyah Display', serif;
+  font-size: 40px; font-weight: 700; line-height: 1.25;
+  color: #7ce8b4;
+}
+.dw-next .tm { font-size: 15px; opacity: .9; }
+.dw-next .cd {
+  font-size: 30px; font-weight: 900;
+  font-variant-numeric: tabular-nums; direction: ltr; letter-spacing: 1px;
+  margin-top: 6px;
+}
+
+.dw-list { margin-top: 16px; display: flex; flex-direction: column; gap: 1px; }
+.dw-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 11px; border-radius: 10px;
+  font-size: 14px;
+}
+.dw-row .n { font-weight: 600; opacity: .92; }
+.dw-row .t { font-variant-numeric: tabular-nums; direction: ltr; opacity: .8; }
+.dw-row.is-next { background: rgba(124, 232, 180, .16); }
+.dw-row.is-next .n, .dw-row.is-next .t { color: #7ce8b4; opacity: 1; }
+.dw-row.passed { opacity: .45; }
+
+.dw-foot {
+  margin-top: 14px; padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11.5px; opacity: .6;
+}
+.dw-close {
+  -webkit-app-region: no-drag;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255, 255, 255, .14); color: #fff;
+  display: grid; place-items: center; font-size: 13px; line-height: 1;
+  opacity: 0; transition: opacity .2s, background .2s;
+}
+.dw:hover .dw-close { opacity: .85; }
+.dw-close:hover { background: #c0603a; opacity: 1; }
+
+.dw.loading { display: grid; place-items: center; min-height: 200px; font-size: 13px; opacity: .8; }

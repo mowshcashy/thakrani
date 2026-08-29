@@ -9,6 +9,7 @@ const state = require('./state');
 const store = require('./store');
 const windows = require('./windows');
 const tray = require('./tray');
+const content = require('./content');
 
 function register(ctx) {
   ipcMain.handle('state:get', () => state.getPayload());
@@ -26,7 +27,21 @@ function register(ctx) {
   ipcMain.handle('widget:resize', (e, { w, h }) => windows.resizeWidget(w, h));
   ipcMain.handle('mini:resize', (e, { w, h }) => windows.resizeMini(w, h));
   ipcMain.handle('mini:hide', () => ctx.applySettings({ miniEnabled: false }));
+  ipcMain.handle('mini:reset', () => windows.resetMiniPosition());
   ipcMain.handle('settings:open', () => windows.openSettings());
+  ipcMain.handle('app:open', (e, route) => windows.openApp(route));
+
+  // المحتوى: الأذكار والمصحف
+  ipcMain.handle('adhkar:all', () => content.getAdhkar());
+  ipcMain.handle('adhkar:test', () => ctx.testDhikr && ctx.testDhikr());
+  ipcMain.handle('quran:surahs', () => content.getSurahs());
+  ipcMain.handle('quran:surah', (e, n) => content.getSurah(n));
+  ipcMain.handle('quran:search', (e, q) => content.searchQuran(q));
+
+  // ودجت سطح المكتب
+  ipcMain.handle('desktop:reset', () => windows.resetDesktopPosition());
+  ipcMain.handle('desktop:resize', (e, { w, h }) => windows.resizeDesktop(w, h));
+  ipcMain.handle('desktop:hide', () => ctx.applySettings({ desktopEnabled: false }));
 
   ipcMain.handle('adhan:pick', async () => {
     const res = await dialog.showOpenDialog({

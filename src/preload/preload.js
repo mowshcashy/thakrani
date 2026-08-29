@@ -27,7 +27,22 @@ contextBridge.exposeInMainWorld('zn', {
   resizeWidget: (w, h) => ipcRenderer.invoke('widget:resize', { w, h }),
   resizeMini: (w, h) => ipcRenderer.invoke('mini:resize', { w, h }),
   hideMini: () => ipcRenderer.invoke('mini:hide'),
+  resetMini: () => ipcRenderer.invoke('mini:reset'),
   openSettings: () => ipcRenderer.invoke('settings:open'),
+  openApp: (route) => ipcRenderer.invoke('app:open', route),
+  onRoute: (cb) => ipcRenderer.on('app:route', (_e, r) => cb(r)),
+
+  // الأذكار والمصحف
+  adhkar: () => ipcRenderer.invoke('adhkar:all'),
+  testDhikr: () => ipcRenderer.invoke('adhkar:test'),
+  surahs: () => ipcRenderer.invoke('quran:surahs'),
+  surah: (n) => ipcRenderer.invoke('quran:surah', n),
+  searchQuran: (q) => ipcRenderer.invoke('quran:search', q),
+
+  // ودجت سطح المكتب
+  resetDesktop: () => ipcRenderer.invoke('desktop:reset'),
+  hideDesktop: () => ipcRenderer.invoke('desktop:hide'),
+  resizeDesktop: (w, h) => ipcRenderer.invoke('desktop:resize', { w, h }),
   pickAdhan: () => ipcRenderer.invoke('adhan:pick'),
   testAdhan: () => ipcRenderer.invoke('adhan:test'),
   quit: () => ipcRenderer.invoke('app:quit'),

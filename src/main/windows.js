@@ -14,9 +14,11 @@ const store = require('./store');
 const PRELOAD = path.join(__dirname, '..', 'preload', 'preload.js');
 
 let widgetWin = null;
-let settingsWin = null;
+let settingsWin = null; // (لم يعد يُستخدم — الإعدادات صفحة داخل نافذة التطبيق)
 let bgWin = null;
 let miniWin = null;
+let appWin = null;
+let desktopWin = null;
 let lastBlurHideAt = 0; // للتفريق بين «نقرة الأيقونة أغلقتها» وطلب فتح جديد
 let lastWidgetShowAt = 0; // لتجاهل وميض التركيز العابر لحظة الإظهار
 let miniAnchor = null; // {right, top} نقطة ارتساء ثابتة للمصغّرة (تمنع الانحراف)
@@ -177,35 +179,43 @@ function setWidgetPinned(pinned) {
   // الودجت دائمًا في المقدمة؛ "التثبيت" يمنع الإخفاء التلقائي عند فقد التركيز (غير مفعّل افتراضيًا)
 }
 
-// ---------- الإعدادات ----------
+// ---------- نافذة التطبيق الرئيسية (المواقيت · الأذكار · المصحف · الإعدادات) ----------
 
-function openSettings() {
-  if (settingsWin && !settingsWin.isDestroyed()) {
-    settingsWin.show();
-    settingsWin.focus();
-    return settingsWin;
+function openApp(route) {
+  if (appWin && !appWin.isDestroyed()) {
+    if (appWin.isMinimized()) appWin.restore();
+    appWin.show();
+    appWin.focus();
+    if (route) appWin.webContents.send('app:route', route);
+    return appWin;
   }
-  settingsWin = new BrowserWindow({
-    width: 460,
-    height: 640,
-    resizable: false,
-    minimizable: true,
-    maximizable: false,
-    fullscreenable: false,
-    title: 'إعدادات ذكِّرني',
+  appWin = new BrowserWindow({
+    width: 1040,
+    height: 720,
+    minWidth: 780,
+    minHeight: 560,
+    title: 'ذكِّرني',
     autoHideMenuBar: true,
     show: false,
-    backgroundColor: '#0b3d2e',
+    backgroundColor: '#0b1712',
     webPreferences: baseWebPrefs(),
   });
-  settingsWin.removeMenu();
-  attachDebug(settingsWin, 'settings');
-  settingsWin.loadFile(paths.rendererFile('settings', 'index.html'));
-  settingsWin.once('ready-to-show', () => settingsWin.show());
-  settingsWin.on('closed', () => {
-    settingsWin = null;
+  appWin.removeMenu();
+  attachDebug(appWin, 'app');
+  appWin.loadFile(paths.rendererFile('app', 'index.html'));
+  appWin.once('ready-to-show', () => {
+    appWin.show();
+    if (route) appWin.webContents.send('app:route', route);
   });
-  return settingsWin;
+  appWin.on('closed', () => {
+    appWin = null;
+  });
+  return appWin;
+}
+
+// الإعدادات صارت صفحة داخل التطبيق
+function openSettings() {
+  return openApp('settings');
 }
 
 // ---------- الودجت المصغّر الثابت الشفاف ----------
@@ -337,6 +347,117 @@ function setMiniEnabled(enabled) {
   }
 }
 
+// ---------- ودجت سطح المكتب (على طريقة ماك: بطاقة ترسو على الخلفية) ----------
+
+const DEFAULT_DESKTOP_SIZE = { width: 340, height: 400 };
+
+function createDesktop() {
+  if (desktopWin && !desktopWin.isDestroyed()) return desktopWin;
+  desktopWin = new BrowserWindow({
+    width: DEFAULT_DESKTOP_SIZE.width,
+    height: DEFAULT_DESKTOP_SIZE.height,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    movable: true,
+    // ليست فوق النوافذ: ترسو على سطح المكتب وتختفي خلف ما تعمل عليه
+    alwaysOnTop: false,
+    skipTaskbar: true,
+    focusable: false, // لا تسرق التركيز ولا تظهر في Alt+Tab
+    fullscreenable: false,
+    maximizable: false,
+    minimizable: false,
+    hasShadow: false,
+    show: false,
+    backgroundColor: '#00000000',
+    webPreferences: baseWebPrefs(),
+  });
+
+  // على ماك: مستوى «سطح المكتب» الحقيقي (خلف كل شيء تمامًا)
+  if (process.platform === 'darwin') {
+    try {
+      desktopWin.setAlwaysOnTop(true, 'desktop');
+      desktopWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false });
+    } catch (_) {}
+  }
+
+  attachDebug(desktopWin, 'desktop');
+  desktopWin.loadFile(paths.rendererFile('desktop', 'index.html'));
+  positionDesktop();
+
+  let moveTimer = null;
+  desktopWin.on('move', () => {
+    clearTimeout(moveTimer);
+    moveTimer = setTimeout(() => {
+      if (desktopWin && !desktopWin.isDestroyed()) {
+        const [x, y] = desktopWin.getPosition();
+        store.set({ desktopBounds: { x, y } });
+      }
+    }, 400);
+  });
+  desktopWin.on('closed', () => {
+    desktopWin = null;
+  });
+  return desktopWin;
+}
+
+function positionDesktop() {
+  if (!desktopWin || desktopWin.isDestroyed()) return;
+  const saved = store.get('desktopBounds');
+  const [w, h] = desktopWin.getSize();
+  let x;
+  let y;
+  if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+    const wa = screen.getDisplayNearestPoint({ x: saved.x, y: saved.y }).workArea;
+    x = Math.min(Math.max(saved.x, wa.x), wa.x + wa.width - w);
+    y = Math.min(Math.max(saved.y, wa.y), wa.y + wa.height - h);
+  } else {
+    const wa = screen.getPrimaryDisplay().workArea;
+    x = wa.x + wa.width - w - 40; // يمين سطح المكتب بمسافة مريحة
+    y = wa.y + 40;
+  }
+  desktopWin.setPosition(Math.round(x), Math.round(y));
+}
+
+function showDesktop() {
+  createDesktop();
+  positionDesktop();
+  showWhenReady(desktopWin, () => desktopWin.showInactive());
+}
+
+function hideDesktop() {
+  if (desktopWin && !desktopWin.isDestroyed()) desktopWin.hide();
+}
+
+function setDesktopEnabled(enabled) {
+  if (enabled) showDesktop();
+  else hideDesktop();
+}
+
+function resizeDesktop(w, h) {
+  if (!desktopWin || desktopWin.isDestroyed()) return;
+  const wa = screen.getPrimaryDisplay().workArea;
+  const width = Math.min(Math.max(Math.round(w || DEFAULT_DESKTOP_SIZE.width), 260), 520);
+  const height = Math.min(Math.max(Math.round(h || DEFAULT_DESKTOP_SIZE.height), 220), wa.height - 40);
+  const [ow, oh] = desktopWin.getSize();
+  if (width === ow && height === oh) return; // بلا تغيير → لا تلمس النافذة
+  const [x, y] = desktopWin.getPosition();
+  // ثبّت الركن العلوي الأيمن، وابقَ داخل الشاشة
+  const nx = Math.min(Math.max(x + (ow - width), wa.x), wa.x + wa.width - width);
+  const ny = Math.min(Math.max(y, wa.y), wa.y + wa.height - height);
+  desktopWin.setBounds({ x: Math.round(nx), y: Math.round(ny), width, height });
+}
+
+function resetDesktopPosition() {
+  store.set({ desktopBounds: null });
+  if (!desktopWin || desktopWin.isDestroyed()) {
+    showDesktop();
+    return;
+  }
+  positionDesktop();
+  if (!desktopWin.isVisible()) desktopWin.showInactive();
+}
+
 // ---------- النافذة الخلفية (أيقونة tray + أذان) ----------
 
 function createBackground() {
@@ -363,7 +484,7 @@ function createBackground() {
 // ---------- بثّ عام ----------
 
 function broadcast(channel, payload) {
-  for (const win of [widgetWin, settingsWin, bgWin, miniWin]) {
+  for (const win of [widgetWin, bgWin, miniWin, appWin, desktopWin]) {
     if (win && !win.isDestroyed()) {
       win.webContents.send(channel, payload);
     }
@@ -382,6 +503,12 @@ module.exports = {
   resizeWidget,
   setWidgetPinned,
   openSettings,
+  openApp,
+  showDesktop,
+  hideDesktop,
+  setDesktopEnabled,
+  resetDesktopPosition,
+  resizeDesktop,
   createBackground,
   createMini,
   showMini,
@@ -392,7 +519,9 @@ module.exports = {
   broadcast,
   sendToBackground,
   getWidget: () => widgetWin,
-  getSettings: () => settingsWin,
+  getSettings: () => appWin,
   getBackground: () => bgWin,
   getMini: () => miniWin,
+  getApp: () => appWin,
+  getDesktop: () => desktopWin,
 };

@@ -47,7 +47,7 @@ function setTooltip(text) {
   if (tray) tray.setToolTip(text);
 }
 
-function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, updateVersion } = {}) {
+function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopEnabled, updateVersion } = {}) {
   if (!tray) return;
 
   // تجميع المدن ضمن مناطقها (قائمة فرعية لكل منطقة)
@@ -69,6 +69,10 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, updateVe
   });
 
   const template = [
+    { label: 'فتح ذكِّرني', click: () => handlers.onOpenApp && handlers.onOpenApp('times') },
+    { label: 'الأذكار', click: () => handlers.onOpenApp && handlers.onOpenApp('adhkar') },
+    { label: 'المصحف', click: () => handlers.onOpenApp && handlers.onOpenApp('quran') },
+    { type: 'separator' },
     { label: 'إظهار / إخفاء الودجت', click: () => handlers.onToggle && handlers.onToggle() },
     {
       label: 'نوع العرض',
@@ -100,6 +104,12 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, updateVe
       label: 'إعادة المصغّر إلى مكانه',
       enabled: !!miniEnabled,
       click: () => handlers.onResetMini && handlers.onResetMini(),
+    },
+    {
+      label: 'ودجت سطح المكتب',
+      type: 'checkbox',
+      checked: !!desktopEnabled,
+      click: () => handlers.onToggleDesktop && handlers.onToggleDesktop(!desktopEnabled),
     },
     { type: 'separator' },
     { label: 'تحديث المواقيت الآن', click: () => handlers.onRefresh && handlers.onRefresh() },

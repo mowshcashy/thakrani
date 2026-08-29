@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self';" />
+<title>ذكِّرني</title>
+<link rel="stylesheet" href="../shared/fonts.css" />
+<link rel="stylesheet" href="../shared/base.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="side-brand">
+        <img class="logo-dark" src="../../../assets/logos/tha-dark.svg" alt="" />
+        <img class="logo-light" src="../../../assets/logos/tha-light.svg" alt="" />
+        <span>ذكِّرنـي</span>
+      </div>
+      <nav class="side-nav" id="nav">
+        <button data-route="times" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.9"/></svg>
+          <span>المواقيت</span>
+        </button>
+        <button data-route="adhkar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10a2 2 0 0 1 2 2v14l-7-3.2L5 20V6a2 2 0 0 1 2-2z"/></svg>
+          <span>الأذكار</span>
+        </button>
+        <button data-route="quran">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5S10 4.8 6.6 4.8c-1.2 0-2 .2-2.6.4v13c.6-.2 1.4-.4 2.6-.4C10 17.8 12 19.5 12 19.5s2-1.7 5.4-1.7c1.2 0 2 .2 2.6.4v-13c-.6-.2-1.4-.4-2.6-.4C14 5.2 12 6.5 12 6.5z"/><path d="M12 6.5v13"/></svg>
+          <span>المصحف</span>
+        </button>
+        <button data-route="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V22a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 6.3 20l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 15H2.9a2 2 0 1 1 0-4H3a1.7 1.7 0 0 0 1.5-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 3.9V4a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 17 5.5l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 11h.1a2 2 0 1 1 0 4H21z"/></svg>
+          <span>الإعدادات</span>
+        </button>
+      </nav>
+      <div class="side-foot">
+        <div id="sideNext" class="side-next"></div>
+      </div>
+    </aside>
+    <main class="main" id="main"></main>
+  </div>
+  <script src="../shared/util.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

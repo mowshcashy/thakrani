@@ -35,6 +35,15 @@
   src: url('../../../assets/fonts/thmanyahsans-Black.woff2') format('woff2');
 }
 
+/* خط المصحف — Amiri Quran (رخصة OFL) مصمَّم للرسم العثماني بالتشكيل الكامل */
+@font-face {
+  font-family: 'Amiri Quran';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../../assets/fonts/AmiriQuran.woff2') format('woff2');
+}
+
 @font-face {
   font-family: 'Thmanyah Display';
   font-weight: 400;

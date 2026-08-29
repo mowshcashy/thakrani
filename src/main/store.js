@@ -30,6 +30,22 @@ const DEFAULTS = {
   widgetPinned: false,
   miniEnabled: true, // الودجت المصغّر الثابت الشفاف
   miniBounds: null, // {x, y} آخر موضع للودجت المصغّر
+
+  // ودجت سطح المكتب (بطاقة كبيرة ترسو على سطح المكتب مثل ماك)
+  desktopEnabled: false,
+  desktopBounds: null,
+
+  // تذكير الأذكار
+  adhkarReminder: {
+    enabled: false,
+    everyMinutes: 60, // 15 | 30 | 60 | 120 | 180 | 360
+    quietFrom: '23:00',
+    quietTo: '06:00',
+  },
+
+  // المصحف
+  quranFontSize: 30,
+  quranBookmark: null, // {surah, verse}
 };
 
 let cachedSettings = null;

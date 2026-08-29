@@ -44,8 +44,12 @@ function notifyIqama(prayer, offsetMin) {
 }
 
 function notify(title, body) {
-  if (!Notification.isSupported()) return;
-  new Notification({ title, body, silent: true }).show();
+  if (!Notification.isSupported()) return null;
+  let icon;
+  try { icon = paths.asset('icons', 'app.png'); } catch (_) { icon = undefined; }
+  const n = new Notification({ title, body, icon, silent: true });
+  n.show();
+  return n; // يُعاد ليتمكّن المنادي من الاستماع لحدث النقر
 }
 
 module.exports = { notifyPrayer, notifyIqama, notify };

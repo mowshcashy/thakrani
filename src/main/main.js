@@ -14,6 +14,7 @@ const tray = require('./tray');
 const scheduler = require('./scheduler');
 const notifier = require('./notifier');
 const updater = require('./updater');
+const adhkarReminder = require('./adhkar-reminder');
 const ipc = require('./ipc');
 const paths = require('./paths');
 
@@ -73,6 +74,8 @@ async function init() {
     onResetMini: () => windows.resetMiniPosition(),
     onCheckUpdate: () => updater.checkNow(),
     onInstallUpdate: () => updater.installNow(),
+    onOpenApp: (route) => windows.openApp(route),
+    onToggleDesktop: (v) => applySettings({ desktopEnabled: v }),
   });
 
   // التحديث التلقائي (يعمل في النسخة المثبَّتة فقط)
@@ -88,6 +91,7 @@ async function init() {
       bgReady = true;
       if (pendingTraySpec) windows.sendToBackground('tray:render', pendingTraySpec);
     },
+    testDhikr: () => adhkarReminder.fire(),
     onAudioError: (msg) => {
       logError('audio', msg);
       if (!audioErrorNotified) {
@@ -106,6 +110,11 @@ async function init() {
 
   // الودجت المصغّر الثابت (إن كان مفعّلًا)
   if (store.get('miniEnabled')) windows.showMini();
+  // ودجت سطح المكتب (إن كان مفعّلًا)
+  if (store.get('desktopEnabled')) windows.showDesktop();
+
+  // تذكير الأذكار حسب إعدادات المستخدم
+  adhkarReminder.apply(store.get('adhkarReminder'), () => windows.openApp('adhkar'));
 
   // أول تحديث للبيانات
   refresh();
@@ -177,9 +186,21 @@ async function init() {
           }
           const mw = windows.getMini();
           if (mw) fs.writeFileSync(path.join(shotDir, 'mini.png'), (await mw.webContents.capturePage()).toPNG());
-          const sw = windows.openSettings();
-          await wait(900);
-          fs.writeFileSync(path.join(shotDir, 'settings.png'), (await sw.webContents.capturePage()).toPNG());
+
+          // ودجت سطح المكتب
+          windows.showDesktop();
+          await wait(1200);
+          const dw = windows.getDesktop();
+          if (dw) fs.writeFileSync(path.join(shotDir, 'desktop.png'), (await dw.webContents.capturePage()).toPNG());
+
+          // نافذة التطبيق: كل صفحة
+          const aw = windows.openApp('times');
+          await wait(1600);
+          for (const r of ['times', 'adhkar', 'quran', 'settings']) {
+            aw.webContents.send('app:route', r);
+            await wait(r === 'quran' ? 2200 : 1100);
+            fs.writeFileSync(path.join(shotDir, `app-${r}.png`), (await aw.webContents.capturePage()).toPNG());
+          }
           console.log('SMOKE shots saved to', shotDir);
         }
         if (process.env.ZN_TEST_ADHAN) {
@@ -202,7 +223,7 @@ async function init() {
       }
       console.log('SMOKE OK');
       quit();
-    }, 9000);
+    }, process.env.ZN_SHOT_DIR ? 6000 : 9000);
   }
 }
 
@@ -307,6 +328,7 @@ function updateTray(payload) {
     currentCity: payload.city,
     viewMode: payload.settings.viewMode,
     miniEnabled: payload.settings.miniEnabled,
+    desktopEnabled: payload.settings.desktopEnabled,
     updateVersion: updater.readyVersion(),
   });
 }
@@ -337,6 +359,12 @@ function applySettings(patch) {
   }
   if (patch && typeof patch.miniEnabled === 'boolean') {
     windows.setMiniEnabled(patch.miniEnabled);
+  }
+  if (patch && typeof patch.desktopEnabled === 'boolean') {
+    windows.setDesktopEnabled(patch.desktopEnabled);
+  }
+  if (patch && patch.adhkarReminder) {
+    adhkarReminder.apply(after.adhkarReminder, () => windows.openApp('adhkar'));
   }
   // مستوى الصوت يسري فورًا حتى أثناء تشغيل الأذان
   if (patch && typeof patch.adhanVolume === 'number') {
