@@ -328,7 +328,7 @@ function renderSettings() {
       <div class="sec-t">ودجتات سطح المكتب</div>
       <div class="group">
         <div class="row">
-          <div class="ltext"><span class="lbl">ودجت المواقيت</span><span class="desc">بطاقة مربّعة تبقى ظاهرة على سطح المكتب</span></div>
+          <div class="ltext"><span class="lbl">ودجت المواقيت</span><span class="desc">بطاقة مربّعة على سطح المكتب — تظهر خلف نوافذك، جرّب Win+D لرؤيتها</span></div>
           ${sw('desktop-enabled', s.desktopEnabled)}
         </div>
         <div class="row">
@@ -352,8 +352,8 @@ function renderSettings() {
           </div>
         </div>
         <div class="row">
-          <div class="ltext"><span class="lbl">مستوى الشفافية</span><span class="desc">كلما قلّ صارت أخف وألطف على الخلفية</span></div>
-          <input type="range" min="0.5" max="1" step="0.02" value="${s.desktopOpacity || 0.92}" data-action="desktop-opacity"/>
+          <div class="ltext"><span class="lbl">كثافة الزجاج</span><span class="desc">كلما قلّت صارت الخلفية أشف — والنص يبقى واضحًا</span></div>
+          <input type="range" min="0.35" max="1" step="0.05" value="${s.desktopOpacity || 0.92}" data-action="desktop-opacity"/>
         </div>
         <div class="row">
           <div class="ltext"><span class="lbl">إعادة الودجتات لأماكنها</span><span class="desc">لو ضاعت أو خرجت عن الشاشة</span></div>

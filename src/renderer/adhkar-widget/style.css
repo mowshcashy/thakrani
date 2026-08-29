@@ -2,13 +2,18 @@
 
 body { background: transparent; padding: 10px; overflow: hidden; }
 
+/* شفافية الزجاج من إعدادات المستخدم — النص يبقى واضحًا */
+:root { --glass: .92; }
+
 .aw {
   position: relative;
   border-radius: 22px;
   padding: 18px 20px 14px;
   color: #fff;
   overflow: hidden;
-  background: linear-gradient(155deg, rgba(14, 46, 33, .52), rgba(5, 20, 14, .60));
+  background: linear-gradient(155deg,
+    rgba(14, 46, 33, calc(var(--glass) * .78)),
+    rgba(5, 20, 14, calc(var(--glass) * .88)));
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, .18);

@@ -4,6 +4,9 @@
 html, body { height: 100%; }
 body { background: transparent; overflow: hidden; }
 
+/* شفافية الزجاج يتحكم بها المستخدم — النص يبقى معتمًا وواضحًا دائمًا */
+:root { --glass: .92; }
+
 .dw {
   position: relative;
   box-sizing: border-box;
@@ -15,8 +18,10 @@ body { background: transparent; overflow: hidden; }
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* زجاج خفيف: تمرّ منه خلفية سطح المكتب بلطف */
-  background: linear-gradient(155deg, rgba(14, 46, 33, .52), rgba(5, 20, 14, .60));
+  /* زجاج خفيف: تمرّ منه خلفية سطح المكتب بلطف — كثافته من إعداد المستخدم */
+  background: linear-gradient(155deg,
+    rgba(14, 46, 33, calc(var(--glass) * .78)),
+    rgba(5, 20, 14, calc(var(--glass) * .88)));
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, .18);

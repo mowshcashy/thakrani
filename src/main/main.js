@@ -146,6 +146,24 @@ async function init() {
           console.log('SMOKE dock right=', wa.x + wa.width - (wx + ww), 'bottom=', wa.y + wa.height - (wy + wh));
         }
       }
+      if (process.env.ZN_TEST_WINDOWS) {
+        // هل النوافذ ظاهرة فعلًا على الشاشة؟ (capturePage تعمل حتى لو كانت مخفية)
+        const { screen: scr } = require('electron');
+        const wa = scr.getPrimaryDisplay().workArea;
+        console.log('SMOKE workArea=', JSON.stringify(wa));
+        const check = (name, w) => {
+          if (!w) return console.log(`SMOKE WIN ${name}: غير موجودة`);
+          const b = w.getBounds();
+          const onScreen = b.x < wa.x + wa.width && b.x + b.width > wa.x &&
+                           b.y < wa.y + wa.height && b.y + b.height > wa.y;
+          console.log(`SMOKE WIN ${name}: visible=${w.isVisible()} opacity=${w.getOpacity().toFixed(2)}`,
+            `bounds=${b.x},${b.y} ${b.width}x${b.height}`, onScreen ? 'داخل الشاشة' : '⚠ خارج الشاشة');
+        };
+        check('desktop', windows.getDesktop());
+        check('adhkar', windows.getAdhkarWidget());
+        check('mini', windows.getMini());
+        check('widget', windows.getWidget());
+      }
       if (process.env.ZN_TEST_TOGGLE) {
         // تبديل الودجت من الأيقونة: إظهار → إخفاء → إظهار (بلا فلك ولا التصاق)
         const wg = windows.getWidget();

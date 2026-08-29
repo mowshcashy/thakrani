@@ -86,8 +86,18 @@ setInterval(() => {
   if (elapsed >= ROTATE_MS) show(idx + 1);
 }, 250);
 
+// كثافة الزجاج والثيم من الإعدادات (النص يبقى واضحًا مهما خفّت الخلفية)
+function applyGlass(p) {
+  if (!p || !p.settings) return;
+  const v = Number(p.settings.desktopOpacity);
+  document.documentElement.style.setProperty('--glass', Number.isFinite(v) ? Math.min(1, Math.max(0.35, v)) : 0.92);
+  window.ZN.applyTheme(p.settings.theme);
+}
+window.zn.onState(applyGlass);
+
 (async () => {
   shell();
+  window.zn.getState().then(applyGlass).catch(() => {});
   pool = (await window.zn.adhkarPool()) || [];
   if (!pool.length) {
     root.innerHTML = '<div class="aw loading">تعذّر تحميل الأذكار.</div>';

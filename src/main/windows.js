@@ -406,7 +406,6 @@ function createDesktop() {
 
   attachDebug(desktopWin, 'desktop');
   desktopWin.loadFile(paths.rendererFile('desktop', 'index.html'));
-  try { desktopWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
   positionDesktop();
   keepOnDesktop(desktopWin, () => store.get('desktopEnabled'));
 
@@ -454,11 +453,34 @@ function hideDesktop() {
   if (desktopWin && !desktopWin.isDestroyed()) desktopWin.hide();
 }
 
-function setDesktopEnabled(enabled) {
-  if (enabled) showDesktop();
-  else hideDesktop();
+/*
+ * ودجت سطح المكتب ترسو خلف النوافذ، فلو فعّلها المستخدم من نافذة التطبيق
+ * لن يرى شيئًا (النافذة تغطيها). نرفعها للمقدمة لحظات ليراها ثم تعود لمكانها.
+ */
+function peek(win) {
+  if (!win || win.isDestroyed()) return;
+  try {
+    win.setAlwaysOnTop(true, 'floating');
+    setTimeout(() => {
+      if (win && !win.isDestroyed() && process.platform !== 'darwin') win.setAlwaysOnTop(false);
+    }, 2500);
+  } catch (_) {}
 }
 
+function setDesktopEnabled(enabled) {
+  if (enabled) {
+    showDesktop();
+    setTimeout(() => peek(desktopWin), 300);
+  } else {
+    hideDesktop();
+  }
+}
+
+/*
+ * الشفافية تُطبَّق على «خلفية الزجاج» داخل الصفحة، لا على النافذة كلها.
+ * setOpacity على النافذة كان يُبهت النص أيضًا ويتضاعف مع شفافية الزجاج
+ * فتصير الودجت شبه خفيّة — لذلك أُلغي هنا وتُمرَّر القيمة للواجهة.
+ */
 function clampOpacity(v) {
   const n = Number(v);
   return Number.isFinite(n) ? Math.min(1, Math.max(0.35, n)) : 0.92;
@@ -485,18 +507,20 @@ function applyDesktopSize() {
 }
 
 function applyDesktopOpacity() {
-  if (!desktopWin || desktopWin.isDestroyed()) return;
-  try { desktopWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
+  // الشفافية صارت داخل الصفحة (خلفية الزجاج) وتصل عبر بثّ الإعدادات،
+  // فيبقى النص واضحًا مهما خفّت الخلفية. لا شيء يُفعل على مستوى النافذة.
 }
 
 function resetDesktopPosition() {
   store.set({ desktopBounds: null });
   if (!desktopWin || desktopWin.isDestroyed()) {
     showDesktop();
+    setTimeout(() => peek(desktopWin), 300);
     return;
   }
   positionDesktop();
   if (!desktopWin.isVisible()) desktopWin.showInactive();
+  peek(desktopWin); // أظهرها أمام المستخدم ليرى أين استقرّت
 }
 
 // ---------- ودجت الأذكار لسطح المكتب ----------
@@ -535,7 +559,6 @@ function createAdhkarWidget() {
   }
   attachDebug(adhkarWin, 'adhkar-widget');
   adhkarWin.loadFile(paths.rendererFile('adhkar-widget', 'index.html'));
-  try { adhkarWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
   positionAdhkarWidget();
   keepOnDesktop(adhkarWin, () => store.get('adhkarWidgetEnabled'));
 
@@ -617,8 +640,12 @@ function hideAdhkarWidget() {
 }
 
 function setAdhkarWidgetEnabled(enabled) {
-  if (enabled) showAdhkarWidget();
-  else hideAdhkarWidget();
+  if (enabled) {
+    showAdhkarWidget();
+    setTimeout(() => peek(adhkarWin), 300);
+  } else {
+    hideAdhkarWidget();
+  }
 }
 
 function resetAdhkarWidgetPosition() {
@@ -630,13 +657,13 @@ function resetAdhkarWidgetPosition() {
   }
   positionAdhkarWidget();
   if (!adhkarWin.isVisible()) adhkarWin.showInactive();
+  peek(adhkarWin);
 }
 
 function applyAdhkarWidgetSize() {
   if (!adhkarWin || adhkarWin.isDestroyed()) return;
   const [, h] = adhkarWin.getSize();
   resizeAdhkarWidget(h);
-  try { adhkarWin.setOpacity(clampOpacity(store.get('desktopOpacity'))); } catch (_) {}
 }
 
 // ---------- النافذة الخلفية (أيقونة tray + أذان) ----------

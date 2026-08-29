@@ -8,6 +8,12 @@ let lastSignature = null;
 const esc = (s) =>
   String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+// كثافة الزجاج من إعدادات المستخدم (النص يبقى معتمًا)
+function applyGlass(p) {
+  const v = Number(p && p.settings && p.settings.desktopOpacity);
+  document.documentElement.style.setProperty('--glass', Number.isFinite(v) ? Math.min(1, Math.max(0.35, v)) : 0.92);
+}
+
 function signature(p) {
   if (!p || !p.next) return 'empty';
   return [
@@ -72,6 +78,7 @@ root.addEventListener('click', (e) => {
 window.zn.onState((p) => {
   current = p;
   window.ZN.applyTheme(p.settings.theme);
+  applyGlass(p);
   const sig = signature(p);
   if (sig === lastSignature) { tick(); return; }
   lastSignature = sig;
@@ -84,6 +91,7 @@ setInterval(tick, 1000);
   current = await window.zn.getState();
   if (current) {
     window.ZN.applyTheme(current.settings.theme);
+    applyGlass(current);
     lastSignature = signature(current);
   }
   render();
