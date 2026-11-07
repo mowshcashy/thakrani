@@ -11,7 +11,7 @@
  * الواجهة ترسل الصوت (Float32 بتردد 16kHz) والمحرّك يعيد النص.
  */
 
-const { app, protocol, ipcMain, BrowserWindow, net } = require('electron');
+const { app, protocol, ipcMain, BrowserWindow } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
@@ -130,7 +130,8 @@ async function downloadFile(f, onBytes, signal) {
   } catch (_) {}
   await fsp.mkdir(path.dirname(dest), { recursive: true });
   const tmp = dest + '.part';
-  const res = await net.fetch(BASE_URL + f.name, { signal });
+  // fetch حق Node: net.fetch في Electron يرجع HTTP 400 بعد تحويل GitHub لخادم الملفات
+  const res = await fetch(BASE_URL + f.name, { signal, redirect: 'follow', headers: { 'user-agent': 'Thakkerni' } });
   if (!res.ok) throw new Error(`HTTP ${res.status} — ${f.name}`);
   const hash = crypto.createHash('sha256');
   const out = fs.createWriteStream(tmp);
