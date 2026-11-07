@@ -1,0 +1,50 @@
+[
+  {
+    "name": "asr-ort-ort-wasm-simd-threaded.jsep.wasm",
+    "path": "ort/ort-wasm-simd-threaded.jsep.wasm",
+    "size": 28352885,
+    "sha256": "62ff86b2f2fa3a79eb87a7e4720e8ea9051942bf975f314181bf7dcef2feac06"
+  },
+  {
+    "name": "asr-whisper-config.json",
+    "path": "whisper/config.json",
+    "size": 1340,
+    "sha256": "2718e72036f25e5ee3f7cd4598159a16d1ba71e80909d20018d925006aa2a9ba"
+  },
+  {
+    "name": "asr-whisper-generation_config.json",
+    "path": "whisper/generation_config.json",
+    "size": 447,
+    "sha256": "1791a083b82af8156550cd40f1b0d030c0915f227d0fba3db7586873ef76f01f"
+  },
+  {
+    "name": "asr-whisper-onnx-decoder_model_merged_quantized.onnx",
+    "path": "whisper/onnx/decoder_model_merged_quantized.onnx",
+    "size": 79398344,
+    "sha256": "0e5339a399157fb9c85c464a7374e4c1843ea8dc4d2e2fce62592b089aa922c4"
+  },
+  {
+    "name": "asr-whisper-onnx-encoder_model_quantized.onnx",
+    "path": "whisper/onnx/encoder_model_quantized.onnx",
+    "size": 23166712,
+    "sha256": "166fb88f668d50932fba304353b1cc8191ec5c46aac51d310a32c89966ad012b"
+  },
+  {
+    "name": "asr-whisper-preprocessor_config.json",
+    "path": "whisper/preprocessor_config.json",
+    "size": 353,
+    "sha256": "86c752c0f26ae2cc92699a1805eb66366b01c9260b7d31c7bd142d6b9e56017a"
+  },
+  {
+    "name": "asr-whisper-tokenizer.json",
+    "path": "whisper/tokenizer.json",
+    "size": 3653235,
+    "sha256": "ff789e15fa4d77dc0664d18f28c4f7a1d65a56a7d31142ad48230279385c0112"
+  },
+  {
+    "name": "asr-whisper-tokenizer_config.json",
+    "path": "whisper/tokenizer_config.json",
+    "size": 21506,
+    "sha256": "150fd495ba73ef5340cc9f819a0362b23d61f68dfbc1f488a27143d4f3cdc876"
+  }
+]

@@ -38,6 +38,24 @@ contextBridge.exposeInMainWorld('zn', {
   surahs: () => ipcRenderer.invoke('quran:surahs'),
   surah: (n) => ipcRenderer.invoke('quran:surah', n),
   searchQuran: (q) => ipcRenderer.invoke('quran:search', q),
+  quranPage: (n) => ipcRenderer.invoke('quran:page', n),
+  pageOf: (s, v) => ipcRenderer.invoke('quran:pageOf', s, v),
+
+  // التسميع (نموذج التعرّف على التلاوة)
+  asr: {
+    status: () => ipcRenderer.invoke('asr:status'),
+    download: () => ipcRenderer.invoke('asr:download'),
+    cancel: () => ipcRenderer.invoke('asr:cancel'),
+    remove: () => ipcRenderer.invoke('asr:remove'),
+    warmup: () => ipcRenderer.invoke('asr:warmup'),
+    transcribe: (audio) => ipcRenderer.invoke('asr:transcribe', audio),
+    release: () => ipcRenderer.invoke('asr:release'),
+    onProgress: (cb) => {
+      const l = (_e, p) => cb(p);
+      ipcRenderer.on('asr:progress', l);
+      return () => ipcRenderer.removeListener('asr:progress', l);
+    },
+  },
 
   // ودجتات سطح المكتب (مشتركة لكل الأنواع)
   drag: {

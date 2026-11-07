@@ -26,6 +26,7 @@ nav.addEventListener('click', (e) => {
 });
 
 function go(r) {
+  if (route === 'tasmee' && r !== 'tasmee') window.Tasmee.leave();
   route = r;
   [...nav.querySelectorAll('button')].forEach((b) => b.classList.toggle('active', b.dataset.route === r));
   render();
@@ -40,6 +41,7 @@ function render() {
   if (route === 'times') renderTimes();
   else if (route === 'adhkar') renderAdhkar();
   else if (route === 'quran') renderQuran();
+  else if (route === 'tasmee') window.Tasmee.render(main, { state, esc, ar, surahs });
   else renderSettings();
 }
 
@@ -160,34 +162,42 @@ let surahs = null;
 let curSurah = 1;
 let quranMode = 'read'; // read | search
 
+let curPage = 1;
+let pageMark = null; // {s, v} آية تُميَّز بعد الانتقال (من البحث أو المتابعة)
+
+const JUZ_NAMES = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر',
+  'الحادي عشر', 'الثاني عشر', 'الثالث عشر', 'الرابع عشر', 'الخامس عشر', 'السادس عشر', 'السابع عشر', 'الثامن عشر',
+  'التاسع عشر', 'العشرون', 'الحادي والعشرون', 'الثاني والعشرون', 'الثالث والعشرون', 'الرابع والعشرون',
+  'الخامس والعشرون', 'السادس والعشرون', 'السابع والعشرون', 'الثامن والعشرون', 'التاسع والعشرون', 'الثلاثون'];
+const QUARTERS = ['الحزب', 'ربع الحزب', 'نصف الحزب', 'ثلاثة أرباع الحزب'];
+
 async function renderQuran() {
   if (!surahs) {
     main.innerHTML = '<div class="empty">جارٍ تحميل المصحف…</div>';
     surahs = await window.zn.surahs();
   }
   const bm = state.settings.quranBookmark;
+  if (bm && curPage === 1 && !renderQuran.started) curPage = await window.zn.pageOf(bm.surah, bm.verse);
+  renderQuran.started = true;
   main.innerHTML = `
-    <div class="page-head">
-      <div class="page-title">المصحف الكريم</div>
-      <div class="page-sub">الرسم العثماني — رواية حفص عن عاصم</div>
-    </div>
-    <div class="split">
+    <div class="split mushaf-split">
       <div>
         <input class="search-box" id="qSearch" placeholder="ابحث في السور أو الآيات…" />
         <div class="list-panel" id="qList">${qListHTML('')}</div>
       </div>
       <div>
         <div class="quran-toolbar">
+          <button class="tool-btn" data-q="prev" title="الصفحة السابقة (←)">› السابقة</button>
+          <label class="page-jump">صفحة <input id="qPage" type="number" min="1" max="604" value="${curPage}" /> <span>من ${ar(604)}</span></label>
+          <button class="tool-btn" data-q="next" title="الصفحة التالية (→)">التالية ‹</button>
+          <span class="tb-gap"></span>
           <button class="tool-btn" data-q="font-">أ−</button>
           <button class="tool-btn" data-q="font+">أ+</button>
-          ${bm ? `<button class="tool-btn" data-q="bookmark-go">↩ متابعة: ${esc(surahName(bm.surah))} ${ar(bm.verse)}</button>` : ''}
-          <button class="tool-btn" data-q="prev">السابقة</button>
-          <button class="tool-btn" data-q="next">التالية</button>
         </div>
-        <div class="mushaf" id="mushaf"></div>
+        <div class="mushaf-stage" id="mushaf"></div>
       </div>
     </div>`;
-  await showSurah(curSurah);
+  await showPage(curPage);
 }
 
 function surahName(n) {
@@ -204,42 +214,87 @@ function qListHTML(q) {
     ).join('') || '<div class="empty" style="padding:24px">لا نتائج</div>';
 }
 
-async function showSurah(n, scrollToVerse) {
-  curSurah = Number(n);
-  quranMode = 'read';
+/** يفتح الصفحة التي فيها الآية (وأول السورة إن لم تُحدَّد آية). */
+async function showSurah(n, verse) {
+  const v = Number(verse) || 1;
+  pageMark = verse ? { s: Number(n), v } : null;
+  await showPage(await window.zn.pageOf(Number(n), v));
+}
+
+function ayahEnd(v) {
+  // خط Amiri Quran يرسم «۝» مع الأرقام بعده زخرفةَ نهاية آية مكتملة
+  return `<span class="aend">۝${ar(v)}</span>`;
+}
+
+async function showPage(n) {
   const box = document.getElementById('mushaf');
   if (!box) return;
-  const s = await window.zn.surah(curSurah);
-  if (!s) { box.innerHTML = '<div class="empty">تعذّر تحميل السورة.</div>'; return; }
+  const p = await window.zn.quranPage(n);
+  curPage = p.page;
+  quranMode = 'read';
+  const last = p.verses[p.verses.length - 1];
+  curSurah = last ? last.s : curSurah;
 
   const size = state.settings.quranFontSize || 30;
-  // التوبة بلا بسملة، والفاتحة بسملتها آية ضمن السورة
-  const showBasmala = curSurah !== 1 && curSurah !== 9;
-  const verses = s.verses.map((t, i) =>
-    `<span class="ayah" id="v${i + 1}" data-v="${i + 1}">${esc(t)}<span class="ayah-num">${ar(i + 1)}</span></span> `
-  ).join('');
+  let body = '';
+  let open = false;
+  const openText = () => { if (!open) { body += `<div class="mp-text" style="font-size:${size}px">`; open = true; } };
+  const closeText = () => { if (open) { body += '</div>'; open = false; } };
+  for (const x of p.verses) {
+    if (x.v === 1) {
+      closeText();
+      body += `<div class="mp-banner"><span>سورة ${esc(surahName(x.s))}</span></div>`;
+      if (x.s !== 1 && x.s !== 9) body += `<div class="mp-basmala" style="font-size:${Math.round(size * 0.92)}px">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>`;
+    }
+    openText();
+    const marked = pageMark && pageMark.s === x.s && pageMark.v === x.v;
+    body += `<span class="ayah${marked ? ' marked' : ''}" id="v${x.s}_${x.v}">${esc(x.text)}&nbsp;${ayahEnd(x.v)}</span> `;
+  }
+  closeText();
 
+  const hizb = p.marks.length
+    ? `<div class="mp-hizb"><span>${esc(QUARTERS[p.marks[0].quarter])}</span><b>${ar(p.marks[0].hizb)}</b></div>`
+    : '';
   box.innerHTML = `
-    <div class="surah-head">
-      <div class="nm">سورة ${esc(s.name)}</div>
-      <div class="meta">${esc(s.place)}، ${ar(s.ayahs)} آية</div>
-    </div>
-    ${showBasmala ? '<div class="basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : ''}
-    <div class="ayat" style="font-size:${size}px">${verses}</div>`;
+    <div class="mp ${p.page % 2 ? 'odd' : 'even'}">
+      ${hizb}
+      <div class="mp-frame">
+        <div class="mp-in">
+          <div class="mp-head">
+            <span>سورة ${esc(surahName(curSurah))}</span>
+            <span>الجزء ${JUZ_NAMES[p.juz - 1] || ar(p.juz)}</span>
+          </div>
+          <div class="mp-body">${body}</div>
+          <div class="mp-foot"><span>${ar(p.page)}</span></div>
+        </div>
+      </div>
+    </div>`;
 
+  const inp = document.getElementById('qPage');
+  if (inp) inp.value = p.page;
   [...document.querySelectorAll('[data-surah]')].forEach((b) =>
     b.classList.toggle('active', Number(b.dataset.surah) === curSurah));
+  const mk = box.querySelector('.ayah.marked');
+  if (mk) mk.scrollIntoView({ block: 'center' });
+  else box.scrollTop = 0;
+  pageMark = null;
 
-  if (scrollToVerse) {
-    const el = document.getElementById('v' + scrollToVerse);
-    if (el) {
-      el.classList.add('marked');
-      el.scrollIntoView({ block: 'center' });
-    }
-  } else {
-    box.scrollTop = 0;
+  // حفظ موضع القراءة (أول آية في الصفحة)
+  const first = p.verses[0];
+  const bm = state.settings.quranBookmark;
+  if (first && (!bm || bm.surah !== first.s || bm.verse !== first.v)) {
+    clearTimeout(showPage._t);
+    showPage._t = setTimeout(() => patch({ quranBookmark: { surah: first.s, verse: first.v } }), 800);
   }
 }
+
+// التقليب بالأسهم (المصحف من اليمين لليسار: السهم الأيسر = التالية)
+document.addEventListener('keydown', (e) => {
+  if (route !== 'quran' || quranMode !== 'read') return;
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement && document.activeElement.tagName)) return;
+  if (e.key === 'ArrowLeft' || e.key === 'PageDown') { e.preventDefault(); if (curPage < 604) showPage(curPage + 1); }
+  if (e.key === 'ArrowRight' || e.key === 'PageUp') { e.preventDefault(); if (curPage > 1) showPage(curPage - 1); }
+});
 
 async function runQuranSearch(q) {
   const box = document.getElementById('mushaf');
@@ -506,14 +561,14 @@ main.addEventListener('click', async (e) => {
   // المصحف: اختيار سورة
   if (el.dataset.surah) {
     await showSurah(el.dataset.surah);
-    await patch({ quranBookmark: { surah: Number(el.dataset.surah), verse: 1 } });
     return;
   }
   // المصحف: نتيجة بحث
   if (el.dataset.go) {
     const [sn, vn] = el.dataset.go.split(':').map(Number);
+    const qs = document.getElementById('qSearch');
+    if (qs) qs.value = '';
     await showSurah(sn, vn);
-    await patch({ quranBookmark: { surah: sn, verse: vn } });
     return;
   }
   // المصحف: أدوات
@@ -522,12 +577,8 @@ main.addEventListener('click', async (e) => {
     const size = state.settings.quranFontSize || 30;
     if (q === 'font+') return patch({ quranFontSize: Math.min(56, size + 3) });
     if (q === 'font-') return patch({ quranFontSize: Math.max(20, size - 3) });
-    if (q === 'prev' && curSurah > 1) return showSurah(curSurah - 1);
-    if (q === 'next' && curSurah < 114) return showSurah(curSurah + 1);
-    if (q === 'bookmark-go') {
-      const bm = state.settings.quranBookmark;
-      if (bm) return showSurah(bm.surah, bm.verse);
-    }
+    if (q === 'prev' && curPage > 1) return showPage(curPage - 1);
+    if (q === 'next' && curPage < 604) return showPage(curPage + 1);
     return;
   }
 
@@ -556,6 +607,11 @@ main.addEventListener('click', async (e) => {
 });
 
 main.addEventListener('change', (e) => {
+  if (e.target.id === 'qPage') {
+    const n = Math.min(604, Math.max(1, parseInt(e.target.value, 10) || 1));
+    showPage(n);
+    return;
+  }
   const el = e.target.closest('[data-action]');
   if (!el) return;
   const a = el.dataset.action;
@@ -588,7 +644,7 @@ main.addEventListener('input', (e) => {
     // بحث في نص المصحف عند كتابة كلمة حقيقية
     el._t = setTimeout(() => {
       if (v.length >= 3 && !/^\d+$/.test(v)) runQuranSearch(v);
-      else if (!v && quranMode === 'search') showSurah(curSurah);
+      else if (!v && quranMode === 'search') showPage(curPage);
     }, 350);
   }
 });
@@ -626,14 +682,13 @@ function apply(p, isFirst) {
     (prev.next && p.next && prev.next.key !== p.next.key) ||
     prev.currentKey !== p.currentKey;
   if (isFirst || structural) {
+    // التسميع: لا نعيد الرسم أبدًا أثناء الجلسة (يضيع التسجيل)
+    if (route === 'tasmee' && prev) { tick(); return; }
     // في المصحف: أعِد الرسم فقط إن تغيّر حجم الخط أو الثيم (لئلا نفقد موضع القراءة)
     if (route === 'quran' && prev) {
       const sizeChanged = prev.settings.quranFontSize !== p.settings.quranFontSize;
       const themeChanged = prev.settings.theme !== p.settings.theme;
-      if (sizeChanged) {
-        const el = document.querySelector('.ayat');
-        if (el) el.style.fontSize = (p.settings.quranFontSize || 30) + 'px';
-      }
+      if (sizeChanged && quranMode === 'read') showPage(curPage);
       if (!themeChanged) { tick(); return; }
     }
     render();

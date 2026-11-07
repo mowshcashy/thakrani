@@ -17,6 +17,7 @@ const updater = require('./updater');
 const adhkarReminder = require('./adhkar-reminder');
 const dragger = require('./dragger');
 const desktopWidgets = require('./desktop-widgets');
+const asr = require('./asr'); // يسجّل بروتوكول zn-asr قبل جاهزية التطبيق
 const ipc = require('./ipc');
 const paths = require('./paths');
 
@@ -62,6 +63,7 @@ async function init() {
   await state.loadStatics(); // تحميل قائمة المدن ومكتبة حساب أم القرى
   state.init();
 
+  asr.init(); // التسميع: البروتوكول والتنزيل والمحرّك
   dragger.init(); // السحب والالتصاق المشترك لكل الودجتات
   windows.createBackground();
   windows.createWidget();
@@ -129,6 +131,75 @@ async function init() {
   setInterval(() => refresh(), 3 * 3600 * 1000);
 
   app.on('activate', () => windows.showWidget());
+
+  // اختبار محرّك التسميع على ملفات صوت خام (Float32 16kHz) ثم الخروج
+  if (process.env.ZN_TEST_ASR) {
+    setTimeout(async () => {
+      const dir = process.env.ZN_TEST_ASR;
+      try {
+        const t0 = Date.now();
+        await asr.transcribe(new Float32Array(16000));
+        console.log('ASR warm', Date.now() - t0, 'ms');
+        for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.f32')).sort()) {
+          const b = fs.readFileSync(path.join(dir, f));
+          const a = new Float32Array(b.buffer, b.byteOffset, b.length / 4);
+          const r = await asr.transcribe(a);
+          console.log('ASR', f, (a.length / 16000).toFixed(1) + 's', r.ms + 'ms', r.text);
+        }
+      } catch (e) {
+        console.log('ASR error', e.message);
+      }
+      app.exit(0);
+    }, 1500);
+  }
+
+  // اختبار صفحة التسميع كاملة بصوت مسجّل: ZN_TEST_TASMEE="surah:from:to:file.f32;..."
+  if (process.env.ZN_TEST_TASMEE) {
+    setTimeout(async () => {
+      const w = windows.openApp('tasmee');
+      await new Promise((r) => setTimeout(r, 2500));
+      for (const spec of process.env.ZN_TEST_TASMEE.split(';')) {
+        if (spec === 'clear') {
+          await w.webContents.executeJavaScript("localStorage.removeItem('zn-tasmee-history'); localStorage.removeItem('zn-tasmee-prefs')");
+          continue;
+        }
+        if (spec === 'download') {
+          const t0 = Date.now();
+          const r = await w.webContents.executeJavaScript('window.zn.asr.download()');
+          console.log('DOWNLOAD', JSON.stringify(r), Math.round((Date.now() - t0) / 1000) + 's', JSON.stringify(await asr.status()));
+          continue;
+        }
+        if (spec === 'light') {
+          await w.webContents.executeJavaScript(`window.ZN.applyTheme('light')`);
+          continue;
+        }
+        if (spec.startsWith('page:')) {
+          await w.webContents.executeJavaScript(`go('quran')`);
+          await new Promise((r) => setTimeout(r, 900));
+          await w.webContents.executeJavaScript(`showPage(${+spec.slice(5)})`);
+          await new Promise((r) => setTimeout(r, 900));
+          const img = await w.webContents.capturePage();
+          fs.writeFileSync(path.join(process.env.ZN_SHOT_DIR, 'mushaf-' + spec.slice(5) + '.png'), img.toPNG());
+          continue;
+        }
+        if (spec === 'setup') {
+          const img = await w.webContents.capturePage();
+          fs.writeFileSync(path.join(process.env.ZN_SHOT_DIR, 'tasmee-setup.png'), img.toPNG());
+          continue;
+        }
+        const [s, f, t, file] = spec.split('|');
+        const b64 = fs.readFileSync(file).toString('base64');
+        const r = await w.webContents.executeJavaScript(`Tasmee._test(${+s},${+f},${+t},'${b64}')`);
+        console.log('TASMEE', path.basename(file), JSON.stringify(r));
+        if (process.env.ZN_SHOT_DIR) {
+          await new Promise((r) => setTimeout(r, 700));
+          const img = await w.webContents.capturePage();
+          fs.writeFileSync(path.join(process.env.ZN_SHOT_DIR, 'tasmee-' + path.basename(file) + '.png'), img.toPNG());
+        }
+      }
+      app.exit(0);
+    }, 1500);
+  }
 
   // اختبار إقلاع سريع: يبدأ ثم يخرج تلقائيًا (للتحقق فقط)
   if (process.env.ZN_SMOKE) {

@@ -39,10 +39,19 @@ function getSurahs() {
   return surahs;
 }
 
+/**
+ * إصلاح خلل في نص المصدر: مسافة بين التنوين وألفه («وُدࣰّ ا» ← «وُدࣰّا»)
+ * فتظهر ألف يتيمة. يُصلَح عند التحميل دون تعديل ملف البيانات.
+ */
+const TANWEEN_GAP = /([\u08F0-\u08F2\u064B-\u064D][\u0610-\u061A\u064B-\u065F\u0670]*)\s+([\u0627\u0649][\u06D6-\u06ED\u0610-\u061A\u064B-\u065F\u0670]*)(?=\s|$)/g;
+function fixVerse(t) {
+  return String(t).replace(TANWEEN_GAP, '$1$2');
+}
+
 function getQuran() {
   if (!quran) {
     try {
-      quran = readJSON('quran.json');
+      quran = readJSON('quran.json').map((sura) => sura.map(fixVerse));
     } catch (e) {
       console.error('تعذّر تحميل المصحف:', e.message);
       quran = [];
@@ -130,4 +139,67 @@ function randomAyah() {
   return { surah: 1, name: meta[0] ? meta[0].name : 'الفاتحة', verse: 2, text: q[0][1] };
 }
 
-module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool, randomAyah };
+/* ─────────── صفحات مصحف المدينة (٦٠٤ صفحة) ─────────── */
+let mushaf = null;
+function getMushaf() {
+  if (!mushaf) {
+    try {
+      mushaf = readJSON('mushaf.json');
+    } catch (e) {
+      console.error('تعذّر تحميل بيانات الصفحات:', e.message);
+      mushaf = { pages: [[1, 1]], juz: [[1, 1]], hizbQuarters: [[1, 1]] };
+    }
+  }
+  return mushaf;
+}
+
+const cmp = (a, b) => (a[0] - b[0]) || (a[1] - b[1]);
+
+/** آخر عنصر في القائمة يبدأ عند (s,v) أو قبلها → رقمه (يبدأ من 1). */
+function indexAt(list, s, v) {
+  let lo = 0;
+  let hi = list.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (cmp(list[mid], [s, v]) <= 0) lo = mid; else hi = mid - 1;
+  }
+  return lo + 1;
+}
+
+function pageOf(s, v) {
+  return indexAt(getMushaf().pages, Number(s), Number(v) || 1);
+}
+
+/** صفحة كاملة: الآيات مع رأس كل سورة تبدأ فيها، والجزء، وعلامات الأحزاب. */
+function getPage(n) {
+  const m = getMushaf();
+  const q = getQuran();
+  const meta = getSurahs();
+  const page = Math.min(Math.max(1, Number(n) || 1), m.pages.length);
+  const [s0, v0] = m.pages[page - 1];
+  const end = m.pages[page] || [115, 1];
+  const verses = [];
+  let s = s0;
+  let v = v0;
+  while (cmp([s, v], end) < 0 && q[s - 1]) {
+    verses.push({ s, v, text: q[s - 1][v - 1] });
+    v++;
+    if (v > q[s - 1].length) { s++; v = 1; }
+  }
+  // أرباع الأحزاب التي تبدأ في هذه الصفحة
+  const marks = [];
+  m.hizbQuarters.forEach((h, i) => {
+    if (cmp(h, [s0, v0]) >= 0 && cmp(h, end) < 0) marks.push({ s: h[0], v: h[1], quarter: i % 4, hizb: Math.floor(i / 4) + 1 });
+  });
+  const first = verses[0] || { s: s0, v: v0 };
+  return {
+    page,
+    total: m.pages.length,
+    juz: indexAt(m.juz, first.s, first.v),
+    surahNames: [...new Set(verses.map((x) => x.s))].map((n2) => ({ n: n2, name: meta[n2 - 1] ? meta[n2 - 1].name : '' })),
+    verses,
+    marks,
+  };
+}
+
+module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool, randomAyah, getPage, pageOf };

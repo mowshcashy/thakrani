@@ -7,3 +7,8 @@ npm-debug.log*
 Thumbs.db
 font/
 *.m4a
+
+# تُجلب وقت البناء (scripts/vendor.js)
+src/renderer/vendor/transformers/transformers.min.js
+src/renderer/vendor/transformers/ort-wasm-simd-threaded.jsep.mjs
+src/renderer/vendor/transformers/LICENSE
