@@ -257,7 +257,17 @@ async function runQuranSearch(q) {
 }
 
 /* ═══════════ الإعدادات ═══════════ */
-const PRAYER_LABELS = [['fajr', 'الفجر'], ['dhuhr', 'الظهر'], ['asr', 'العصر'], ['maghrib', 'المغرب'], ['isha', 'العشاء']];
+// ودجتات سطح المكتب [المفتاح، الاسم، الوصف، الأحجام] — المفاتيح تطابق desktop-widgets.js
+const WIDGETS = [
+  ['prayer', 'مواقيت اليوم', 'بطاقة مربّعة: الصلاة القادمة وبقية اليوم', [[260, 'صغير'], [320, 'وسط'], [400, 'كبير'], [480, 'ضخم']]],
+  ['ring', 'حلقة الصلاة القادمة', 'دائرة تمتلئ كلما اقترب وقت الصلاة', [[170, 'صغير'], [220, 'وسط'], [280, 'كبير']]],
+  ['clock', 'الساعة والتاريخ', 'الوقت والتاريخ الهجري والميلادي', [[190, 'صغير'], [250, 'وسط'], [320, 'كبير']]],
+  ['adhkar', 'الأذكار', 'ذكر يتبدّل كل ٣٠ ثانية', [[300, 'ضيّق'], [360, 'وسط'], [440, 'عريض']]],
+  ['ayah', 'آية', 'آية من المصحف تتبدّل كل ١٠ دقائق', [[300, 'ضيّق'], [380, 'وسط'], [460, 'عريض']]],
+  ['tasbeeh', 'المسبحة', 'تسبيح ما بعد الصلاة ٣٣ / ٣٣ / ٣٤', [[180, 'صغير'], [230, 'وسط'], [290, 'كبير']]],
+];
+
+const PRAYER_LABELS =[['fajr', 'الفجر'], ['dhuhr', 'الظهر'], ['asr', 'العصر'], ['maghrib', 'المغرب'], ['isha', 'العشاء']];
 
 function cityOptions(sel) {
   if (!cities.length) return `<option selected>${esc(sel)}</option>`;
@@ -326,41 +336,31 @@ function renderSettings() {
 
     <div class="sec">
       <div class="sec-t">ودجتات سطح المكتب</div>
+      <div class="page-sub" style="margin:0 2px 10px">تجلس على سطح المكتب خلف نوافذك (Win+D لرؤيتها). اسحبها بالماوس وتلتصق بحواف الشاشة وببعضها.</div>
       <div class="group">
-        <div class="row">
-          <div class="ltext"><span class="lbl">ودجت المواقيت</span><span class="desc">بطاقة مربّعة على سطح المكتب — تظهر خلف نوافذك، جرّب Win+D لرؤيتها</span></div>
-          ${sw('desktop-enabled', s.desktopEnabled)}
-        </div>
-        <div class="row">
-          <div class="ltext"><span class="lbl">حجم ودجت المواقيت</span></div>
-          <div class="seg">
-            ${[[260, 'صغيرة'], [320, 'متوسطة'], [400, 'كبيرة'], [480, 'ضخمة']].map(([v, nm]) =>
-              `<button data-action="dsize-${v}" class="${(s.desktopSize || 320) === v ? 'active' : ''}">${nm}</button>`
-            ).join('')}
-          </div>
-        </div>
-        <div class="row">
-          <div class="ltext"><span class="lbl">ودجت الأذكار</span><span class="desc">ذكر يتبدّل كل ٣٠ ثانية مع زرَّي السابق والتالي</span></div>
-          ${sw('adhkarw-enabled', s.adhkarWidgetEnabled)}
-        </div>
-        <div class="row">
-          <div class="ltext"><span class="lbl">عرض ودجت الأذكار</span></div>
-          <div class="seg">
-            ${[[300, 'ضيّقة'], [360, 'متوسطة'], [440, 'عريضة']].map(([v, nm]) =>
-              `<button data-action="asize-${v}" class="${(s.adhkarWidgetSize || 360) === v ? 'active' : ''}">${nm}</button>`
-            ).join('')}
-          </div>
-        </div>
+        ${WIDGETS.map(([kind, name, desc, sizes]) => {
+          const c = (s.widgets && s.widgets[kind]) || {};
+          const cur = c.size || sizes[1][0];
+          const controls = c.enabled
+            ? `<div class="seg">${sizes.map(([v, nm]) =>
+                `<button data-action="wsize" data-kind="${kind}" data-size="${v}" class="${cur === v ? 'active' : ''}">${nm}</button>`).join('')}</div>
+               <button class="btn" data-action="wreset" data-kind="${kind}" title="انقلها لمكان فارغ">↺</button>`
+            : '';
+          return `
+          <div class="row">
+            <div class="ltext"><span class="lbl">${name}</span><span class="desc">${desc}</span></div>
+            <div class="btn-row" style="align-items:center">${controls}${sw('wtoggle-' + kind, c.enabled)}</div>
+          </div>`;
+        }).join('')}
         <div class="row">
           <div class="ltext"><span class="lbl">كثافة الزجاج</span><span class="desc">كلما قلّت صارت الخلفية أشف — والنص يبقى واضحًا</span></div>
           <input type="range" min="0.35" max="1" step="0.05" value="${s.desktopOpacity || 0.92}" data-action="desktop-opacity"/>
         </div>
         <div class="row">
-          <div class="ltext"><span class="lbl">إعادة الودجتات لأماكنها</span><span class="desc">لو ضاعت أو خرجت عن الشاشة</span></div>
+          <div class="ltext"><span class="lbl">ترتيب تلقائي</span><span class="desc">يرصّ كل الودجتات الظاهرة بشكل مرتّب في يمين الشاشة</span></div>
           <div class="btn-row">
-            <button class="btn" data-action="reset-mini">المصغّرة</button>
-            <button class="btn" data-action="reset-desktop">المواقيت</button>
-            <button class="btn" data-action="reset-adhkarw">الأذكار</button>
+            <button class="btn brand" data-action="warrange">رتّبها</button>
+            <button class="btn" data-action="reset-mini">إعادة المصغّرة</button>
           </div>
         </div>
       </div>
@@ -549,10 +549,9 @@ main.addEventListener('click', async (e) => {
   if (a === 'adhan-pick') { await window.zn.pickAdhan(); return; }
   if (a === 'rem-test') return window.zn.testDhikr();
   if (a === 'reset-mini') return window.zn.resetMini();
-  if (a === 'reset-desktop') return window.zn.resetDesktop();
-  if (a === 'reset-adhkarw') return window.zn.resetAdhkarWidget();
-  if (a && a.startsWith('dsize-')) return patch({ desktopSize: parseInt(a.slice(6), 10) });
-  if (a && a.startsWith('asize-')) return patch({ adhkarWidgetSize: parseInt(a.slice(6), 10) });
+  if (a === 'wsize') return patch({ widgets: { [el.dataset.kind]: { size: parseInt(el.dataset.size, 10) } } });
+  if (a === 'wreset') return window.zn.widgetReset(el.dataset.kind);
+  if (a === 'warrange') return window.zn.widgetsArrange();
   if (a === 'quit') return window.zn.quit();
 });
 
@@ -566,8 +565,7 @@ main.addEventListener('change', (e) => {
   if (a === 'adhan-enabled') return patch({ adhanEnabled: el.checked });
   if (a === 'autostart') return patch({ autoStart: el.checked });
   if (a === 'mini-enabled') return patch({ miniEnabled: el.checked });
-  if (a === 'desktop-enabled') return patch({ desktopEnabled: el.checked });
-  if (a === 'adhkarw-enabled') return patch({ adhkarWidgetEnabled: el.checked });
+  if (a && a.startsWith('wtoggle-')) return patch({ widgets: { [a.slice(8)]: { enabled: el.checked } } });
   if (a === 'desktop-opacity') return patch({ desktopOpacity: parseFloat(el.value) });
   if (a === 'rem-enabled') return patch({ adhkarReminder: { enabled: el.checked } });
   if (a === 'rem-every') return patch({ adhkarReminder: { everyMinutes: parseInt(el.value, 10) } });

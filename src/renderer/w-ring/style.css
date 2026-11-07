@@ -1,0 +1,17 @@
+.glass { display: grid; place-items: center; border-radius: 50%; }
+
+.ring { position: absolute; inset: 6vmin; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { fill: none; stroke: rgba(255, 255, 255, .14); stroke-width: 6; }
+.ring .prog {
+  fill: none; stroke: url(#g); stroke-width: 6; stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.center { position: relative; text-align: center; line-height: 1.2; }
+.center .lbl { font-size: 6.5vmin; opacity: .72; }
+.center .nm { font-family: 'Thmanyah Display', serif; font-size: 17vmin; font-weight: 700; color: #8bf0c0; }
+.center .cd { font-size: 10vmin; font-weight: 900; font-variant-numeric: tabular-nums; direction: ltr; margin-top: 1vmin; }
+.center .tm { font-size: 6.5vmin; opacity: .8; margin-top: 1vmin; }
+
+.w-close { top: 12vmin; inset-inline-start: 12vmin; }

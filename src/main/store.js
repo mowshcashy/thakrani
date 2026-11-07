@@ -31,16 +31,10 @@ const DEFAULTS = {
   miniEnabled: true, // الودجت المصغّر الثابت الشفاف
   miniBounds: null, // {x, y} آخر موضع للودجت المصغّر
 
-  // ودجت سطح المكتب للمواقيت (بطاقة مربّعة ترسو على سطح المكتب مثل ماك)
-  desktopEnabled: false,
-  desktopBounds: null,
-  desktopSize: 320, // طول ضلع المربّع: 260 | 320 | 400 | 480
-  desktopOpacity: 0.92,
-
-  // ودجت الأذكار لسطح المكتب (تتبدّل كل 30 ثانية)
-  adhkarWidgetEnabled: false,
-  adhkarWidgetBounds: null,
-  adhkarWidgetSize: 360, // العرض: 300 | 360 | 440
+  // ودجتات سطح المكتب — لكل نوع {enabled, x, y, size} (انظر desktop-widgets.js)
+  widgets: {},
+  widgetsMigrated: false, // ترحيل مفاتيح v1.4 (desktopEnabled…) إلى widgets مرة واحدة
+  desktopOpacity: 0.92, // كثافة الزجاج لكل ودجتات سطح المكتب
 
   // تذكير الأذكار
   adhkarReminder: {

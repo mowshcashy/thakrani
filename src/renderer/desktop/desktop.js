@@ -72,7 +72,7 @@ function tick() {
 
 root.addEventListener('click', (e) => {
   const b = e.target.closest('[data-action]');
-  if (b && b.dataset.action === 'hide') window.zn.hideDesktop();
+  if (b && b.dataset.action === 'hide') window.WK.hide();
 });
 
 window.zn.onState((p) => {
@@ -86,6 +86,7 @@ window.zn.onState((p) => {
 });
 
 setInterval(tick, 1000);
+window.WK.enableDrag();
 
 (async () => {
   current = await window.zn.getState();

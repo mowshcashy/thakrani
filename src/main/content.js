@@ -114,4 +114,20 @@ function adhkarPool() {
   return pool;
 }
 
-module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool };
+/** آية عشوائية بطول مناسب لودجت سطح المكتب. */
+function randomAyah() {
+  const q = getQuran();
+  const meta = getSurahs();
+  if (!q.length) return null;
+  for (let tries = 0; tries < 60; tries++) {
+    const s = Math.floor(Math.random() * q.length);
+    const v = Math.floor(Math.random() * q[s].length);
+    const text = q[s][v];
+    if (text && text.length >= 25 && text.length <= 230) {
+      return { surah: s + 1, name: meta[s] ? meta[s].name : '', verse: v + 1, text };
+    }
+  }
+  return { surah: 1, name: meta[0] ? meta[0].name : 'الفاتحة', verse: 2, text: q[0][1] };
+}
+
+module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool, randomAyah };

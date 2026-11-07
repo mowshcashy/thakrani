@@ -38,15 +38,9 @@ function register(ctx) {
   ipcMain.handle('quran:surah', (e, n) => content.getSurah(n));
   ipcMain.handle('quran:search', (e, q) => content.searchQuran(q));
 
-  // ودجت سطح المكتب
-  ipcMain.handle('desktop:reset', () => windows.resetDesktopPosition());
-
-  // ودجت الأذكار لسطح المكتب
+  // محتوى ودجتات سطح المكتب (السحب والتحجيم والإخفاء في desktop-widgets.js)
   ipcMain.handle('adhkarw:pool', () => content.adhkarPool());
-  ipcMain.handle('adhkarw:resize', (e, h) => windows.resizeAdhkarWidget(h));
-  ipcMain.handle('adhkarw:hide', () => ctx.applySettings({ adhkarWidgetEnabled: false }));
-  ipcMain.handle('adhkarw:reset', () => windows.resetAdhkarWidgetPosition());
-  ipcMain.handle('desktop:hide', () => ctx.applySettings({ desktopEnabled: false }));
+  ipcMain.handle('quran:randomAyah', () => content.randomAyah());
 
   ipcMain.handle('adhan:pick', async () => {
     const res = await dialog.showOpenDialog({

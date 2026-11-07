@@ -1,0 +1,49 @@
+/* زجاج ودجتات سطح المكتب — مشترك. المقاسات بـ vmin حتى يتناسق التصميم مع أي حجم. */
+
+:root { --glass: .92; }
+html, body { height: 100%; margin: 0; }
+body { background: transparent; overflow: hidden; }
+
+.glass {
+  position: relative;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  border-radius: 8vmin;
+  color: #fff;
+  overflow: hidden;
+  background: linear-gradient(155deg,
+    rgba(14, 46, 33, calc(var(--glass) * .78)),
+    rgba(5, 20, 14, calc(var(--glass) * .88)));
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+  user-select: none;
+  cursor: default;
+}
+.is-dragging, .is-dragging * { cursor: grabbing !important; }
+
+/* زر الإغلاق: يظهر عند المرور (صار المرور يعمل بعد التخلي عن app-region) */
+.w-close {
+  position: absolute; top: 4.5vmin; inset-inline-start: 4.5vmin;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255, 255, 255, .16); color: #fff;
+  display: grid; place-items: center; font-size: 14px; line-height: 1;
+  opacity: 0; transition: opacity .2s, background .2s; z-index: 5;
+}
+.glass:hover .w-close { opacity: .9; }
+.w-close:hover { background: #c0603a; opacity: 1; }
+
+.w-btn {
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 10px;
+  color: #fff; font-weight: 700;
+  transition: background .18s, transform .12s;
+}
+.w-btn:hover { background: rgba(255, 255, 255, .26); }
+.w-btn:active { transform: scale(.96); }
+
+.accent { color: #8bf0c0; }

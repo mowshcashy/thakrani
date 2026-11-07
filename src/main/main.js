@@ -15,6 +15,8 @@ const scheduler = require('./scheduler');
 const notifier = require('./notifier');
 const updater = require('./updater');
 const adhkarReminder = require('./adhkar-reminder');
+const dragger = require('./dragger');
+const desktopWidgets = require('./desktop-widgets');
 const ipc = require('./ipc');
 const paths = require('./paths');
 
@@ -60,6 +62,7 @@ async function init() {
   await state.loadStatics(); // تحميل قائمة المدن ومكتبة حساب أم القرى
   state.init();
 
+  dragger.init(); // السحب والالتصاق المشترك لكل الودجتات
   windows.createBackground();
   windows.createWidget();
 
@@ -75,8 +78,8 @@ async function init() {
     onCheckUpdate: () => updater.checkNow(),
     onInstallUpdate: () => updater.installNow(),
     onOpenApp: (route) => windows.openApp(route),
-    onToggleDesktop: (v) => applySettings({ desktopEnabled: v }),
-    onToggleAdhkarWidget: (v) => applySettings({ adhkarWidgetEnabled: v }),
+    onToggleWidgetKind: (kind, v) => applySettings({ widgets: { [kind]: { enabled: v } } }),
+    onArrangeWidgets: () => desktopWidgets.arrange(),
   });
 
   // التحديث التلقائي (يعمل في النسخة المثبَّتة فقط)
@@ -111,9 +114,8 @@ async function init() {
 
   // الودجت المصغّر الثابت (إن كان مفعّلًا)
   if (store.get('miniEnabled')) windows.showMini();
-  // ودجتات سطح المكتب (إن كانت مفعّلة)
-  if (store.get('desktopEnabled')) windows.showDesktop();
-  if (store.get('adhkarWidgetEnabled')) windows.showAdhkarWidget();
+  // ودجتات سطح المكتب (تفتح المفعّل منها فقط)
+  desktopWidgets.init({ onChange: () => state.recompute() });
 
   // تذكير الأذكار حسب إعدادات المستخدم
   adhkarReminder.apply(store.get('adhkarReminder'), () => windows.openApp('adhkar'));
@@ -135,6 +137,9 @@ async function init() {
       console.log('SMOKE cities=', p.cityNames.length, 'city=', p.city,
         'next=', p.next && p.next.name, p.next && p.next.time, 'online=', p.online);
       console.log('SMOKE lastError=', p.lastError);
+      for (const d of require('electron').screen.getAllDisplays()) {
+        console.log('SMOKE display', JSON.stringify(d.bounds), 'scale=', d.scaleFactor, 'work=', JSON.stringify(d.workArea));
+      }
       {
         // تحقّق الإرساء: المسافة عن حافتي العمل السفلية واليمنى (المتوقع 12/12)
         const { screen: scr } = require('electron');
@@ -159,10 +164,24 @@ async function init() {
           console.log(`SMOKE WIN ${name}: visible=${w.isVisible()} opacity=${w.getOpacity().toFixed(2)}`,
             `bounds=${b.x},${b.y} ${b.width}x${b.height}`, onScreen ? 'داخل الشاشة' : '⚠ خارج الشاشة');
         };
-        check('desktop', windows.getDesktop());
-        check('adhkar', windows.getAdhkarWidget());
+        for (const [k, w] of desktopWidgets.all()) check(k, w);
         check('mini', windows.getMini());
         check('widget', windows.getWidget());
+      }
+      if (process.env.ZN_TEST_SNAP) {
+        // منطق الالتصاق نفسه: شاشة 1000×800 وودجت أخرى عند x=300
+        const wa = { x: 0, y: 0, width: 1000, height: 800 };
+        const other = [{ x: 300, y: 12, width: 200, height: 200 }];
+        const a = dragger.snap({ x: 15, y: 30, width: 200, height: 200 }, other, wa);
+        const b = dragger.snap({ x: 98, y: 20, width: 200, height: 200 }, other, wa);
+        const c = dragger.snap({ x: 500, y: 500, width: 200, height: 200 }, other, wa);
+        const c2 = dragger.snap({ x: -50, y: 900, width: 200, height: 200 }, other, wa);
+        console.log('SMOKE SNAP edge=', JSON.stringify(a), '(المتوقع 12,12)');
+        console.log('SMOKE SNAP beside=', JSON.stringify(b), '(المتوقع 88,12 — بجانبها بفراغ 12)');
+        console.log('SMOKE SNAP free=', JSON.stringify(c), '(المتوقع 500,500 — بعيدة فلا التصاق)');
+        console.log('SMOKE SNAP clamp=', JSON.stringify(c2), '(المتوقع 0,600 — داخل الشاشة)');
+        const d = dragger.resolveOverlap({ x: 320, y: 20, width: 200, height: 200 }, other, wa);
+        console.log('SMOKE SNAP drop-on-other=', JSON.stringify(d), '(المتوقع 512,20 — تنزلق لأقرب فراغ)');
       }
       if (process.env.ZN_TEST_TOGGLE) {
         // تبديل الودجت من الأيقونة: إظهار → إخفاء → إظهار (بلا فلك ولا التصاق)
@@ -191,47 +210,49 @@ async function init() {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       try {
         if (shotDir) {
+          // capturePage لنافذة مخفية قد يعلّق على ويندوز → مهلة 5 ثوانٍ لكل التقاط
+          const realCapture = (win) => win.webContents.capturePage();
+          const capture = (win) => Promise.race([
+            realCapture(win),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('capture timeout')), 5000)),
+          ]);
+          const save = async (file, win) => {
+            try { fs.writeFileSync(file, (await capture(win)).toPNG()); }
+            catch (e) { console.log('SMOKE shot skipped', path.basename(file), e.message); }
+          };
+          windows.showWidget(); // اختبار التبديل قد يتركها مخفية
           await wait(800); // دع الخط يكتمل والقياس يستقر قبل الالتقاط
           const w = windows.getWidget();
           if (w) {
             const origMode = store.get('viewMode'); // ثبّت الوضع لكل لقطة ثم أعده
             state.setSettings({ viewMode: 'next' });
             await wait(700);
-            fs.writeFileSync(path.join(shotDir, 'widget-next.png'), (await w.webContents.capturePage()).toPNG());
+            await save(path.join(shotDir, 'widget-next.png'), w);
             state.setSettings({ viewMode: 'all' });
             await wait(700);
-            fs.writeFileSync(path.join(shotDir, 'widget-all.png'), (await w.webContents.capturePage()).toPNG());
+            await save(path.join(shotDir, 'widget-all.png'), w);
             state.setSettings({ viewMode: origMode });
             await wait(400);
           }
           const mw = windows.getMini();
-          if (mw) fs.writeFileSync(path.join(shotDir, 'mini.png'), (await mw.webContents.capturePage()).toPNG());
+          if (mw) await save(path.join(shotDir, 'mini.png'), mw);
 
-          // ودجتات سطح المكتب — بحجمين للتأكد من التحجيم
-          windows.showDesktop();
-          windows.showAdhkarWidget();
-          await wait(1600);
-          const dw = windows.getDesktop();
-          if (dw) {
-            fs.writeFileSync(path.join(shotDir, 'desktop.png'), (await dw.webContents.capturePage()).toPNG());
-            const [dwW, dwH] = dw.getSize();
-            console.log('SMOKE desktop size=', dwW + 'x' + dwH, dwW === dwH ? '(مربّعة ✓)' : '(ليست مربّعة ✗)');
-            state.setSettings({ desktopSize: 480 });
-            windows.applyDesktopSize();
-            await wait(900);
-            const [bw, bh] = dw.getSize();
-            console.log('SMOKE desktop big=', bw + 'x' + bh);
-            fs.writeFileSync(path.join(shotDir, 'desktop-big.png'), (await dw.webContents.capturePage()).toPNG());
-            state.setSettings({ desktopSize: 320 });
-            windows.applyDesktopSize();
-            await wait(600);
+          // كل أنواع ودجتات سطح المكتب (تُفتح للفحص دون تغيير إعدادات المستخدم)
+          for (const kind of desktopWidgets.ORDER) desktopWidgets.ensure(kind);
+          await wait(2200);
+          for (const [kind, win] of desktopWidgets.all()) {
+            await save(path.join(shotDir, `w-${kind}.png`), win);
+            const b = win.getBounds();
+            console.log(`SMOKE widget ${kind}: ${b.width}x${b.height} @${b.x},${b.y} visible=${win.isVisible()}`);
           }
-          const awin = windows.getAdhkarWidget();
-          if (awin) {
-            fs.writeFileSync(path.join(shotDir, 'adhkar-widget.png'), (await awin.webContents.capturePage()).toPNG());
-            const [aw, ah] = awin.getSize();
-            console.log('SMOKE adhkar widget size=', aw + 'x' + ah);
+          // لا تداخل بين الودجتات بعد التموضع التلقائي
+          const rects = desktopWidgets.all().map(([k, w]) => [k, w.getBounds()]);
+          let overlaps = 0;
+          for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+            const a = rects[i][1], c = rects[j][1];
+            if (a.x < c.x + c.width && a.x + a.width > c.x && a.y < c.y + c.height && a.y + a.height > c.y) overlaps++;
           }
+          console.log('SMOKE widget overlaps=', overlaps, '(المتوقع 0)');
 
           // نافذة التطبيق: كل صفحة
           const aw = windows.openApp('times');
@@ -239,7 +260,7 @@ async function init() {
           for (const r of ['times', 'adhkar', 'quran', 'settings']) {
             aw.webContents.send('app:route', r);
             await wait(r === 'quran' ? 2200 : 1100);
-            fs.writeFileSync(path.join(shotDir, `app-${r}.png`), (await aw.webContents.capturePage()).toPNG());
+            await save(path.join(shotDir, `app-${r}.png`), aw);
           }
           console.log('SMOKE shots saved to', shotDir);
         }
@@ -368,8 +389,7 @@ function updateTray(payload) {
     currentCity: payload.city,
     viewMode: payload.settings.viewMode,
     miniEnabled: payload.settings.miniEnabled,
-    desktopEnabled: payload.settings.desktopEnabled,
-    adhkarWidgetEnabled: payload.settings.adhkarWidgetEnabled,
+    widgets: payload.settings.widgets || {},
     updateVersion: updater.readyVersion(),
   });
 }
@@ -401,18 +421,8 @@ function applySettings(patch) {
   if (patch && typeof patch.miniEnabled === 'boolean') {
     windows.setMiniEnabled(patch.miniEnabled);
   }
-  if (patch && typeof patch.desktopEnabled === 'boolean') {
-    windows.setDesktopEnabled(patch.desktopEnabled);
-  }
-  if (patch && typeof patch.adhkarWidgetEnabled === 'boolean') {
-    windows.setAdhkarWidgetEnabled(patch.adhkarWidgetEnabled);
-  }
-  if (patch && patch.desktopSize !== undefined) windows.applyDesktopSize();
-  if (patch && patch.adhkarWidgetSize !== undefined) windows.applyAdhkarWidgetSize();
-  if (patch && patch.desktopOpacity !== undefined) {
-    windows.applyDesktopOpacity();
-    windows.applyAdhkarWidgetSize();
-  }
+  // ودجتات سطح المكتب: فتح/إغلاق/تحجيم حسب الإعدادات (الشفافية تصل للواجهات مع البثّ)
+  if (patch && patch.widgets) desktopWidgets.sync();
   if (patch && patch.adhkarReminder) {
     adhkarReminder.apply(after.adhkarReminder, () => windows.openApp('adhkar'));
   }

@@ -60,7 +60,7 @@ function fit() {
   requestAnimationFrame(() => {
     const card = root.querySelector('.aw');
     if (!card) return;
-    window.zn.resizeAdhkarWidget(Math.ceil(card.getBoundingClientRect().height) + 20);
+    window.zn.widgetFit(Math.ceil(card.getBoundingClientRect().height) + 20);
   });
 }
 
@@ -68,7 +68,7 @@ root.addEventListener('click', (e) => {
   const b = e.target.closest('[data-a]');
   if (!b) return;
   const a = b.dataset.a;
-  if (a === 'hide') return window.zn.hideAdhkarWidget();
+  if (a === 'hide') return window.WK.hide();
   if (a === 'next') return show(idx + 1);
   if (a === 'prev') return show(idx - 1);
 });
@@ -94,6 +94,7 @@ function applyGlass(p) {
   window.ZN.applyTheme(p.settings.theme);
 }
 window.zn.onState(applyGlass);
+window.WK.enableDrag();
 
 (async () => {
   shell();

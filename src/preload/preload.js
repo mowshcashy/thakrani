@@ -39,15 +39,17 @@ contextBridge.exposeInMainWorld('zn', {
   surah: (n) => ipcRenderer.invoke('quran:surah', n),
   searchQuran: (q) => ipcRenderer.invoke('quran:search', q),
 
-  // ودجت سطح المكتب
-  resetDesktop: () => ipcRenderer.invoke('desktop:reset'),
-  hideDesktop: () => ipcRenderer.invoke('desktop:hide'),
-
-  // ودجت الأذكار لسطح المكتب
+  // ودجتات سطح المكتب (مشتركة لكل الأنواع)
+  drag: {
+    start: () => ipcRenderer.send('wdrag:start'),
+    end: () => ipcRenderer.send('wdrag:end'),
+  },
+  widgetFit: (h) => ipcRenderer.invoke('widget:fit', h),
+  widgetHide: () => ipcRenderer.invoke('widget:hideSelf'),
+  widgetsArrange: () => ipcRenderer.invoke('widgets:arrange'),
+  widgetReset: (kind) => ipcRenderer.invoke('widgets:reset', kind),
   adhkarPool: () => ipcRenderer.invoke('adhkarw:pool'),
-  resizeAdhkarWidget: (h) => ipcRenderer.invoke('adhkarw:resize', h),
-  hideAdhkarWidget: () => ipcRenderer.invoke('adhkarw:hide'),
-  resetAdhkarWidget: () => ipcRenderer.invoke('adhkarw:reset'),
+  randomAyah: () => ipcRenderer.invoke('quran:randomAyah'),
   pickAdhan: () => ipcRenderer.invoke('adhan:pick'),
   testAdhan: () => ipcRenderer.invoke('adhan:test'),
   quit: () => ipcRenderer.invoke('app:quit'),

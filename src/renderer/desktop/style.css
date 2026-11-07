@@ -26,7 +26,6 @@ body { background: transparent; overflow: hidden; }
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, .18);
   box-shadow: 0 6vmin 12vmin -5vmin rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .16);
-  -webkit-app-region: drag;
   text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
 }
 
@@ -104,7 +103,6 @@ body { background: transparent; overflow: hidden; }
 
 /* ─── زر الإغلاق ─── */
 .dw-close {
-  -webkit-app-region: no-drag;
   position: absolute; top: 2.4vmin; inset-inline-start: 2.4vmin;
   width: 4.6vmin; height: 4.6vmin; min-width: 18px; min-height: 18px;
   border-radius: 50%;

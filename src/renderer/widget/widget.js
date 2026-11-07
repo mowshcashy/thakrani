@@ -38,7 +38,7 @@ function render() {
   lastSignature = signature(p);
 
   const header = `
-    <div class="topbar drag">
+    <div class="topbar">
       <div class="brand"><img class="brand-logo" src="../../../assets/logos/tha-dark.svg" alt=""/><span>ذكِّرنـي</span></div>
       <div class="segment no-drag">
         <button data-action="mode-next" class="${mode === 'next' ? 'active' : ''}">أقرب صلاة</button>
@@ -79,7 +79,8 @@ function render() {
     </div>`;
 
   root.innerHTML = `<div class="card">${header}${datebar}${content}${status}</div>`;
-  tickCountdown();
+  inRender = true;
+  try { tickCountdown(); } finally { inRender = false; }
   resize();
 }
 
@@ -150,16 +151,20 @@ function tickCountdown() {
   if (cd) cd.textContent = window.ZN.formatCountdown(ms);
   if (cdw) cdw.textContent = window.ZN.formatCountdownWords(ms);
 
-  // عدّاد الإقامة: حدّثه، وأعد الرسم عند بدايته أو نهايته
+  // عدّاد الإقامة: حدّثه، وأعد الرسم عند بدايته أو نهايته.
+  // سطر الإقامة موجود في وضع «أقرب صلاة» فقط؛ في «كل الصلوات» غيابه طبيعي —
+  // ومقارنته هناك كانت تطلب رسمًا لا ينتهي (رسم → عدّاد → رسم…) فتتجمّد الودجت.
   const iq = iqamaInfo(current);
   const line = document.getElementById('iqline');
   if (iq && line) {
     const el = document.getElementById('iqcd');
     if (el) el.textContent = window.ZN.formatCountdown(iq.ts - Date.now());
-  } else if (!!iq !== !!line) {
+  } else if (current.settings.viewMode === 'next' && !!iq !== !!line && !inRender) {
     render();
   }
 }
+
+var inRender = false; // حارس إضافي ضد أي إعادة رسم متداخلة (var: متاح قبل سطره)
 
 function resize() {
   requestAnimationFrame(() => {

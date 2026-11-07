@@ -47,7 +47,17 @@ function setTooltip(text) {
   if (tray) tray.setToolTip(text);
 }
 
-function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopEnabled, adhkarWidgetEnabled, updateVersion } = {}) {
+// أسماء ودجتات سطح المكتب بالترتيب (المفاتيح تطابق desktop-widgets.js)
+const WIDGET_LABELS = [
+  ['prayer', 'مواقيت اليوم'],
+  ['ring', 'حلقة الصلاة القادمة'],
+  ['clock', 'الساعة والتاريخ'],
+  ['adhkar', 'الأذكار'],
+  ['ayah', 'آية'],
+  ['tasbeeh', 'المسبحة'],
+];
+
+function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, widgets = {}, updateVersion } = {}) {
   if (!tray) return;
 
   // تجميع المدن ضمن مناطقها (قائمة فرعية لكل منطقة)
@@ -106,16 +116,20 @@ function rebuildMenu({ cities = [], currentCity, viewMode, miniEnabled, desktopE
       click: () => handlers.onResetMini && handlers.onResetMini(),
     },
     {
-      label: 'ودجت المواقيت (سطح المكتب)',
-      type: 'checkbox',
-      checked: !!desktopEnabled,
-      click: () => handlers.onToggleDesktop && handlers.onToggleDesktop(!desktopEnabled),
-    },
-    {
-      label: 'ودجت الأذكار (سطح المكتب)',
-      type: 'checkbox',
-      checked: !!adhkarWidgetEnabled,
-      click: () => handlers.onToggleAdhkarWidget && handlers.onToggleAdhkarWidget(!adhkarWidgetEnabled),
+      label: 'ودجتات سطح المكتب',
+      submenu: [
+        ...WIDGET_LABELS.map(([kind, label]) => {
+          const on = !!(widgets[kind] && widgets[kind].enabled);
+          return {
+            label,
+            type: 'checkbox',
+            checked: on,
+            click: () => handlers.onToggleWidgetKind && handlers.onToggleWidgetKind(kind, !on),
+          };
+        }),
+        { type: 'separator' },
+        { label: 'ترتيب تلقائي', click: () => handlers.onArrangeWidgets && handlers.onArrangeWidgets() },
+      ],
     },
     { type: 'separator' },
     { label: 'تحديث المواقيت الآن', click: () => handlers.onRefresh && handlers.onRefresh() },

@@ -23,14 +23,14 @@ function render() {
   const p = current;
   lastSignature = signature(p);
   if (!p || !p.next) {
-    root.innerHTML = `<div class="mini loading drag">جارٍ التحميل…</div>`;
+    root.innerHTML = `<div class="mini loading">جارٍ التحميل…</div>`;
     resize();
     return;
   }
   const fmt = p.settings.timeFormat;
   const tag = p.next.isTomorrow ? '<span class="tag">غدًا</span>' : '';
   root.innerHTML = `
-    <div class="mini drag">
+    <div class="mini">
       ${CRESCENT}
       <div class="mcol">
         <div class="mprayer">${esc(p.next.name)}<span class="mtime">${esc(window.ZN.formatClock(p.next.time, fmt))}</span>${tag}</div>
@@ -96,6 +96,7 @@ if (window.matchMedia) {
 }
 
 setInterval(tick, 1000);
+window.WK.enableDrag();
 
 (async () => {
   current = await window.zn.getState();

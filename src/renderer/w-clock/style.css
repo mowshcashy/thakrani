@@ -1,0 +1,19 @@
+.glass {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; padding: 6vmin;
+}
+.day { font-size: 7vmin; opacity: .75; font-weight: 600; }
+.time {
+  font-size: 25vmin; font-weight: 900; line-height: 1.05;
+  font-variant-numeric: tabular-nums; direction: ltr; letter-spacing: .5vmin;
+  margin-top: 1vmin;
+}
+.time .sec { font-size: 9vmin; opacity: .55; font-weight: 700; margin-inline-start: 1vmin; }
+.period { font-size: 7vmin; opacity: .8; margin-top: -1vmin; }
+.hijri { font-family: 'Thmanyah Display', serif; font-size: 8vmin; font-weight: 700; margin-top: 4vmin; color: #e8d6ac; }
+.greg { font-size: 5.6vmin; opacity: .65; margin-top: .5vmin; }
+.next {
+  margin-top: 4vmin; font-size: 5.8vmin;
+  background: rgba(139, 240, 192, .16); color: #8bf0c0;
+  border-radius: 99vmin; padding: 1.2vmin 4.5vmin; white-space: nowrap;
+}
