@@ -38,6 +38,8 @@ function register(ctx) {
   ipcMain.handle('quran:surah', (e, n) => content.getSurah(n));
   ipcMain.handle('quran:search', (e, q) => content.searchQuran(q));
   ipcMain.handle('quran:page', (e, n) => content.getPage(n));
+  ipcMain.handle('quran:lines', (e, n) => content.getPageLines(n));
+  ipcMain.handle('quran:juzRanges', () => content.juzRanges());
   ipcMain.handle('quran:pageOf', (e, s, v) => content.pageOf(s, v));
 
   // محتوى ودجتات سطح المكتب (السحب والتحجيم والإخفاء في desktop-widgets.js)

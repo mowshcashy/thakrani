@@ -40,6 +40,19 @@ contextBridge.exposeInMainWorld('zn', {
   searchQuran: (q) => ipcRenderer.invoke('quran:search', q),
   quranPage: (n) => ipcRenderer.invoke('quran:page', n),
   pageOf: (s, v) => ipcRenderer.invoke('quran:pageOf', s, v),
+  pageLines: (n) => ipcRenderer.invoke('quran:lines', n),
+  juzRanges: () => ipcRenderer.invoke('quran:juzRanges'),
+
+  // خطة الحفظ
+  hifz: {
+    get: () => ipcRenderer.invoke('hifz:get'),
+    setPlan: (plan, preJuz) => ipcRenderer.invoke('hifz:setPlan', plan, preJuz),
+    setReminder: (r) => ipcRenderer.invoke('hifz:setReminder', r),
+    record: (e) => ipcRenderer.invoke('hifz:record', e),
+    setPages: (pages, m) => ipcRenderer.invoke('hifz:setPages', pages, m),
+    reset: () => ipcRenderer.invoke('hifz:reset'),
+    testReminder: () => ipcRenderer.invoke('hifz:testReminder'),
+  },
 
   // التسميع (نموذج التعرّف على التلاوة)
   asr: {

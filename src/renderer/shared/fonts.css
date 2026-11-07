@@ -65,3 +65,12 @@
   font-display: swap;
   src: url('../../../assets/fonts/thmanyahserifdisplay-Bold.woff2') format('woff2');
 }
+
+/* خط مصحف المدينة الرقمي — مجمع الملك فهد لطباعة المصحف الشريف (KFGQPC Uthmanic Script HAFS) */
+@font-face {
+  font-family: 'KFGQPC Hafs';
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  src: url('../../../assets/fonts/UthmanicHafs.woff2') format('woff2');
+}

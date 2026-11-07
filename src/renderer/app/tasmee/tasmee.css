@@ -73,24 +73,49 @@
 
 .tsm-board { max-height: calc(100vh - 230px); user-select: none; }
 
-/* الكلمات — الخلفيات بتدرّج يغطي جسم الحرف فقط (سطر Amiri Quran عالٍ جدًا) */
-.w { --band: transparent; border-radius: 6px; transition: color .35s, background .35s;
-  background: linear-gradient(transparent 30%, var(--band) 30%, var(--band) 86%, transparent 86%); }
-.w-hidden { color: transparent; --band: var(--surface-2); }
-.theme-dark .w-hidden { --band: rgba(255,255,255,.07); }
-.w-peek { color: var(--text-soft); opacity: .6; }
-.w-ok { color: var(--text); }
-.w-bad { color: #c0392b; --band: rgba(192,57,43,.10); cursor: help; }
-.w-miss { color: #a87a06; --band: rgba(184,134,11,.12); cursor: help; }
-.w-hint { color: #7a5cc4; --band: rgba(122,92,196,.10); }
-.theme-dark .w-bad { color: #ff8a7a; --band: rgba(255,120,100,.12); }
-.theme-dark .w-miss { color: #f0c46a; --band: rgba(240,196,106,.12); }
-.theme-dark .w-hint { color: #b9a1ff; --band: rgba(185,161,255,.12); }
-.w-next.w-hidden { --band: var(--highlight-strong); animation: tsm-next 1.6s ease-in-out infinite; }
+/* الكلمات داخل صفحة المصحف (الورقة كريمية دائمًا فالألوان ثابتة) */
+.mw.w-out { opacity: .32; }
+.mw.w-hidden { color: transparent; background: linear-gradient(transparent 22%, rgba(30,91,134,.10) 22%, rgba(30,91,134,.10) 88%, transparent 88%); }
+.mw.w-peek { color: #8a8170; }
+.mw.w-ok { color: #12703f; }
+.mw.w-fixed { color: #3fa36c; background: rgba(63,163,108,.14); }
+.mw.w-bad { color: #c0392b; background: rgba(192,57,43,.11); cursor: help; }
+.mw.w-miss { color: #b07d00; background: rgba(184,134,11,.13); cursor: help; }
+.mw.w-hint { color: #7a5cc4; background: rgba(122,92,196,.11); }
+.mw.w-retry { color: transparent; background: rgba(192,57,43,.12); box-shadow: inset 0 0 0 1.5px rgba(192,57,43,.55); }
+.mw.w-next.w-hidden { background: linear-gradient(transparent 22%, rgba(18,128,90,.28) 22%, rgba(18,128,90,.28) 88%, transparent 88%); animation: tsm-next 1.6s ease-in-out infinite; }
 @keyframes tsm-next { 50% { opacity: .45; } }
+.mpage .playing { background: rgba(30,91,134,.16); }
+
+.tsm-board.mushaf-stage { max-height: calc(100vh - 210px); }
+.tsm-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; margin-bottom: 10px; }
+.tsm-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lg { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.lg.ok { background: #12703f; } .lg.fixed { background: #7fd0a1; } .lg.bad { background: #c0392b; }
+.lg.miss { background: #d9a520; } .lg.hint { background: #7a5cc4; }
+.tsm-tabs { margin-bottom: 14px; }
+.tsm-opts { display: flex; flex-direction: column; }
+.tsm-form input[type="number"] {
+  width: 100%; font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px;
+}
+.tsm-review-bar { gap: 14px; }
+.tsm-review-bar #tsmTimer { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--brand-600); min-width: 48px; }
+.tsm-actions select { min-width: 0; }
+
+.tsm-retry {
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  margin-bottom: 12px; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.8;
+}
+.tsm-retry.ask { background: rgba(192,57,43,.10); border: 1px solid rgba(192,57,43,.35); }
+.tsm-retry.good { background: rgba(63,163,108,.14); border: 1px solid rgba(63,163,108,.4); }
+.tsm-retry.bad { background: rgba(184,134,11,.12); border: 1px solid rgba(184,134,11,.4); }
+.tsm-kind { font-size: 13px; font-weight: 700; margin: -6px 0 12px; color: #b07d00; }
+.tsm-kind.ok { color: #12805a; }
+.theme-dark .tsm-kind.ok { color: #63d7a6; }
 
 /* ───────── النتيجة ───────── */
-.tsm-result { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+.tsm-result { display: grid; grid-template-columns: 270px 1fr; gap: 18px; align-items: start; }
 .tsm-scorecard { text-align: center; }
 .tsm-ring {
   --p: 0;
@@ -105,7 +130,7 @@
 .tsm-ring b { font-size: 34px; font-weight: 900; color: var(--c); line-height: 1.1; }
 .tsm-ring span { font-size: 12px; color: var(--text-soft); }
 .tsm-msg { font-family: 'Thmanyah Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 14px; }
-.tsm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 14px; }
+.tsm-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 14px; }
 .tsm-stats div { display: flex; flex-direction: column; gap: 2px; }
 .tsm-stats b { font-size: 20px; font-weight: 800; }
 .tsm-stats span { font-size: 11px; color: var(--text-soft); }
@@ -113,6 +138,7 @@
 .tsm-stats .bad { color: #c0392b; }
 .tsm-stats .miss { color: #b8860b; }
 .tsm-stats .hint { color: #7a5cc4; }
+.tsm-stats .fixed { color: #3fa36c; }
 .tsm-result .w-bad, .tsm-result .w-miss { cursor: pointer; }
 
 @media (max-width: 900px) {

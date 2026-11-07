@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; media-src 'self' blob: mediastream:;" />
+      content="default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; media-src 'self' blob: mediastream: https://everyayah.com;" />
 <title>ذكِّرني</title>
 <link rel="stylesheet" href="../shared/fonts.css" />
 <link rel="stylesheet" href="../shared/base.css" />
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="mushaf.css" />
 <link rel="stylesheet" href="tasmee/tasmee.css" />
+<link rel="stylesheet" href="hifz/hifz.css" />
 </head>
 <body>
   <div class="shell">
@@ -32,6 +33,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5S10 4.8 6.6 4.8c-1.2 0-2 .2-2.6.4v13c.6-.2 1.4-.4 2.6-.4C10 17.8 12 19.5 12 19.5s2-1.7 5.4-1.7c1.2 0 2 .2 2.6.4v-13c-.6-.2-1.4-.4-2.6-.4C14 5.2 12 6.5 12 6.5z"/><path d="M12 6.5v13"/></svg>
           <span>المصحف</span>
         </button>
+        <button data-route="hifz">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>
+          <span>حفظي</span>
+        </button>
         <button data-route="tasmee">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
           <span>التسميع</span>
@@ -48,8 +53,10 @@
     <main class="main" id="main"></main>
   </div>
   <script src="../shared/util.js"></script>
+  <script src="mushaf-view.js"></script>
   <script src="tasmee/match.js"></script>
   <script src="tasmee/tasmee.js"></script>
+  <script src="hifz/hifz.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

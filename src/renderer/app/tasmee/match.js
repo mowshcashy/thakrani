@@ -140,6 +140,7 @@
     }
     const res = ref.map(() => ({ state: 'pending' }));
     const extra = [];
+    const ins = []; // {at: موضع كلمة المرجع التالية، text، sk}
     let i = endI, j = H;
     while (i > 0 || j > 0) {
       const b = B[i * W + j];
@@ -152,10 +153,11 @@
         i--;
       } else {
         extra.push(hyp[j - 1].text);
+        ins.push({ at: i, text: hyp[j - 1].text, sk: hyp[j - 1].sk });
         j--;
       }
     }
-    return { words: res, reached: endI, extra: extra.reverse(), cost: bestCost };
+    return { words: res, reached: endI, extra: extra.reverse(), ins: ins.reverse(), cost: bestCost };
   }
 
   const api = { displayWords, skel, hypWords, same, align, wdist };

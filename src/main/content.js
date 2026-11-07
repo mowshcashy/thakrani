@@ -202,4 +202,37 @@ function getPage(n) {
   };
 }
 
-module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool, randomAyah, getPage, pageOf };
+
+/* ─────────── أسطر مصحف المدينة (١٥ سطرًا، خط مجمع الملك فهد) ─────────── */
+let lines = null;
+function getLines() {
+  if (!lines) {
+    try {
+      lines = readJSON('mushaf-lines.json').pages;
+    } catch (e) {
+      console.error('تعذّر تحميل أسطر المصحف:', e.message);
+      lines = [];
+    }
+  }
+  return lines;
+}
+
+/**
+ * صفحة بأسطرها كما في المصحف المطبوع.
+ * كل سطر: {w:[[سورة, آية, رقم الكلمة (0 = علامة نهاية الآية), النص], …]} أو {h: سورة} رأس سورة أو {b:1} بسملة أو {e:1} فارغ.
+ */
+function getPageLines(n) {
+  const all = getLines();
+  const page = Math.min(Math.max(1, Number(n) || 1), all.length || 1);
+  const base = getPage(page); // الجزء والحزب وأسماء السور
+  const meta = getSurahs();
+  const ls = (all[page - 1] || []).map((l) => (l && l.h ? { ...l, name: meta[l.h - 1] ? meta[l.h - 1].name : '' } : l));
+  return { page, total: all.length, juz: base.juz, marks: base.marks, surahNames: base.surahNames, lines: ls };
+}
+
+/** صفحات كل جزء في مصحف المدينة: [[من، إلى] × 30] (٢٠ صفحة لكل جزء، الأول ٢١ والأخير ٢٣). */
+function juzRanges() {
+  return Array.from({ length: 30 }, (_, i) => (i === 0 ? [1, 21] : i === 29 ? [582, 604] : [2 + 20 * i, 21 + 20 * i]));
+}
+
+module.exports = { getAdhkar, getSurahs, getSurah, searchQuran, randomDhikr, adhkarPool, randomAyah, getPage, pageOf, getPageLines, juzRanges };

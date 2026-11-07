@@ -17,7 +17,8 @@ const updater = require('./updater');
 const adhkarReminder = require('./adhkar-reminder');
 const dragger = require('./dragger');
 const desktopWidgets = require('./desktop-widgets');
-const asr = require('./asr'); // يسجّل بروتوكول zn-asr قبل جاهزية التطبيق
+const asr = require('./asr');
+const hifz = require('./hifz'); // يسجّل بروتوكول zn-asr قبل جاهزية التطبيق
 const ipc = require('./ipc');
 const paths = require('./paths');
 
@@ -43,8 +44,12 @@ function logError(kind, err) {
 process.on('uncaughtException', (e) => logError('uncaughtException', e));
 process.on('unhandledRejection', (e) => logError('unhandledRejection', e));
 
+// ---------- بيانات معزولة للاختبار ----------
+// ZN_USERDATA: مجلد بيانات مستقل (لا يلمس بيانات المستخدم، ويعمل بجانب النسخة المثبّتة)
+if (process.env.ZN_USERDATA) app.setPath('userData', process.env.ZN_USERDATA);
+
 // ---------- منع تعدّد النسخ ----------
-const gotLock = app.requestSingleInstanceLock();
+const gotLock = process.env.ZN_USERDATA ? true : app.requestSingleInstanceLock();
 if (!gotLock) {
   // نسخة أخرى تعمل — أبلغها بإظهار الودجت ثم اخرج بهدوء
   app.quit();
@@ -119,6 +124,15 @@ async function init() {
   // ودجتات سطح المكتب (تفتح المفعّل منها فقط)
   desktopWidgets.init({ onChange: () => state.recompute() });
 
+  // خطة الحفظ والتذكير اليومي (بعد صلاة يختارها المستخدم)
+  hifz.init({ getSchedule: () => state.schedule, openApp: (r) => windows.openApp(r) });
+  let lastHifzArm = '';
+  state.on('update', () => {
+    // المواقيت تتجدد يوميًا → أعد ضبط موعد التذكير مرة كل يوم/مدينة
+    const key = new Date().toDateString() + '|' + store.get('city');
+    if (key !== lastHifzArm) { lastHifzArm = key; hifz.arm(); }
+  });
+
   // تذكير الأذكار حسب إعدادات المستخدم
   adhkarReminder.apply(store.get('adhkarReminder'), () => windows.openApp('adhkar'));
 
@@ -158,7 +172,8 @@ async function init() {
     setTimeout(async () => {
       const w = windows.openApp('tasmee');
       await new Promise((r) => setTimeout(r, 2500));
-      for (const spec of process.env.ZN_TEST_TASMEE.split(';')) {
+      const SPECS = process.env.ZN_TEST_TASMEE;
+      for (const spec of SPECS.includes(' ;; ') ? SPECS.split(' ;; ') : SPECS.split(';')) {
         if (spec === 'clear') {
           await w.webContents.executeJavaScript("localStorage.removeItem('zn-tasmee-history'); localStorage.removeItem('zn-tasmee-prefs')");
           continue;
@@ -167,6 +182,23 @@ async function init() {
           const t0 = Date.now();
           const r = await w.webContents.executeJavaScript('window.zn.asr.download()');
           console.log('DOWNLOAD', JSON.stringify(r), Math.round((Date.now() - t0) / 1000) + 's', JSON.stringify(await asr.status()));
+          continue;
+        }
+        if (spec.startsWith('route:')) {
+          await w.webContents.executeJavaScript(`go('${spec.slice(6)}')`);
+          await new Promise((r) => setTimeout(r, 1500));
+          const img = await w.webContents.capturePage();
+          fs.writeFileSync(path.join(process.env.ZN_SHOT_DIR, 'route-' + spec.slice(6) + '.png'), img.toPNG());
+          continue;
+        }
+        if (spec.startsWith('shot:')) {
+          const img = await w.webContents.capturePage();
+          fs.writeFileSync(path.join(process.env.ZN_SHOT_DIR, spec.slice(5) + '.png'), img.toPNG());
+          continue;
+        }
+        if (spec.startsWith('js:')) {
+          console.log('JS', JSON.stringify(await w.webContents.executeJavaScript(spec.slice(3))));
+          await new Promise((r) => setTimeout(r, 1200));
           continue;
         }
         if (spec === 'light') {
@@ -189,7 +221,10 @@ async function init() {
         }
         const [s, f, t, file] = spec.split('|');
         const b64 = fs.readFileSync(file).toString('base64');
-        const r = await w.webContents.executeJavaScript(`Tasmee._test(${+s},${+f},${+t},'${b64}')`);
+        const r = await w.webContents.executeJavaScript(`(async () => {
+          const a = await zn.pageOf(${+s}, ${+f}); const b = await zn.pageOf(${+s}, ${+t});
+          return Tasmee._test({ pageFrom: a, pageTo: b, range: { s: ${+s}, from: ${+f}, to: ${+t} } }, '${b64}');
+        })()`);
         console.log('TASMEE', path.basename(file), JSON.stringify(r));
         if (process.env.ZN_SHOT_DIR) {
           await new Promise((r) => setTimeout(r, 700));
