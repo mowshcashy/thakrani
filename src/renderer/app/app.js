@@ -63,43 +63,94 @@ function renderTimes() {
     rows.push(pr);
     if (pr.key === 'fajr' && p.sunrise) rows.push({ ...p.sunrise, isSunrise: true });
   }
-  const nextKey = n && !n.isTomorrow ? n.key : null;
+  // موضع اليوم على خط السير: كل ما قبل القادمة مضى
+  const nextIdx = n && !n.isTomorrow ? rows.findIndex((r) => r.key === n.key) : rows.length;
+  const done = rows.length > 1 ? Math.max(0, Math.min(1, (nextIdx - 0.5) / (rows.length - 1))) : 0;
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'صباح الخير' : 'مساء الخير';
 
   main.innerHTML = `
     <div class="page-head">
+      <div class="page-eyebrow">${greet}، ${esc(window.ZN.hijriString(p.hijriDate))}</div>
       <div class="page-title">مواقيت اليوم</div>
-      <div class="page-sub">من التقويم الرسمي — أم القرى</div>
     </div>
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="lbl">الصلاة القادمة</div>
+          <div class="nm">${n ? esc(n.name) : '—'}</div>
+          <div class="tm">${n ? esc(clock(n.time)) : ''}${n && n.isTomorrow ? '<small>غدًا</small>' : ''}</div>
+        </div>
+        <div class="hero-cd">
+          <div class="cd" id="cd">${n ? window.ZN.formatCountdown(n.ts - Date.now()) : ''}</div>
+          <div class="words" id="cdw">${n ? esc(window.ZN.formatCountdownWords(n.ts - Date.now())) : ''}</div>
+          ${iq ? `<div class="iq">إقامة ${esc(iq.name || '')} بعد <b id="iqcd">${window.ZN.formatCountdown(iq.ts - Date.now())}</b></div>` : ''}
+        </div>
+      </div>
+      <div class="day-line" style="--done:${(done * (100 - 100 / rows.length)).toFixed(1)}%">
+        ${rows.map((pr, i) => `
+          <div class="dp ${pr.isSunrise ? 'sunrise' : ''} ${i < nextIdx ? 'past' : i === nextIdx ? 'next' : ''}">
+            <i></i><b>${esc(pr.name)}</b><span>${esc(clock(pr.time))}</span>
+          </div>`).join('')}
+      </div>
+    </section>
     <div class="meta-row">
       <div>
         <div class="hijri-big">${esc(window.ZN.hijriString(p.hijriDate))}</div>
-        <div class="greg-sm">${esc(window.ZN.gregorianString(p.gregorianDate))}</div>
+        <div class="greg-sm">${esc(window.ZN.gregorianString(p.gregorianDate))}، مواقيت أم القرى الرسمية</div>
       </div>
       <button class="city-pill" data-action="goto-settings">
         <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
         ${esc(p.city)}
       </button>
     </div>
-    <div class="times-grid">
-      <div class="card next-big">
-        ${iq ? `<div class="iq">الإقامة بعد <b id="iqcd">${window.ZN.formatCountdown(iq.ts - Date.now())}</b></div>` : ''}
-        <div class="lbl">الصلاة القادمة</div>
-        <div class="nm">${n ? esc(n.name) : '—'}</div>
-        <div class="tm">${n ? esc(clock(n.time)) : ''}${n && n.isTomorrow ? ' <span style="font-size:12px;color:var(--gold)">غدًا</span>' : ''}</div>
-        <div class="cd" id="cd">${n ? window.ZN.formatCountdown(n.ts - Date.now()) : ''}</div>
-        <div class="words" id="cdw">${n ? esc(window.ZN.formatCountdownWords(n.ts - Date.now())) : ''}</div>
-      </div>
-      <div class="card">
-        <div class="tlist">
-          ${rows.map((pr) => `
-            <div class="trow ${pr.isSunrise ? 'sunrise' : ''} ${pr.key === nextKey ? 'is-next' : ''}">
-              <span class="nm"><span class="dot"></span>${esc(pr.name)}
-                ${pr.key === nextKey ? '<span class="badge-next">التالية</span>' : ''}</span>
-              <span class="tm">${esc(clock(pr.time))}</span>
-            </div>`).join('')}
+    <div class="home-row">
+      <section class="card home-wird" id="homeWird"></section>
+      <section class="card home-quick">
+        <div class="home-h">اختصارات</div>
+        <div class="chips">
+          <button class="chip" data-home="adhkar">${hour < 12 ? 'أذكار الصباح' : 'أذكار المساء'}</button>
+          <button class="chip" data-home="quran">${state.settings.quranBookmark ? 'تابع القراءة من ' + esc(surahLabel(state.settings.quranBookmark.surah)) : 'افتح المصحف'}</button>
+          <button class="chip" data-home="tasmee">سمّع من حفظك</button>
+          <button class="chip" data-home="hifz">حفظي</button>
         </div>
-      </div>
+      </section>
     </div>`;
+  renderHomeWird();
+}
+
+function surahLabel(n) {
+  const x = (surahs || []).find((y) => y.n === Number(n));
+  return x ? 'سورة ' + x.name : 'آخر موضع';
+}
+
+/** «تابع وردك»: مهام اليوم من خطة الحفظ كخط سير (حفظ ← مراجعة ← تحدي). */
+async function renderHomeWird() {
+  const box = document.getElementById('homeWird');
+  if (!box) return;
+  const H = await window.zn.hifz.get();
+  if (!box.isConnected) return;
+  if (!H.plan) {
+    box.innerHTML = `<div class="home-h">تابع وردك</div>
+      <p class="home-p">حدّد كم وجه تحفظ باليوم، والتطبيق يرتّب لك الحفظ والمراجعة ويذكّرك.</p>
+      <button class="btn brand" data-home="hifz">ابدأ خطة الحفظ</button>`;
+    return;
+  }
+  const t = H.today;
+  const ch = H.challenges.find((c) => c.id === 'daily');
+  const steps = [
+    { name: 'حفظ جديد', done: !t.newPages.length || t.newPages.every((x) => t.newDone.includes(x)), sub: t.newPages.length ? 'الوجه ' + ar(t.newPages[0]) : 'لا يوجد' },
+    { name: 'مراجعة', done: t.review.every((x) => t.reviewDone.includes(x)), sub: t.review.length ? ar(t.reviewDone.length) + ' من ' + ar(t.review.length) : 'لا يوجد' },
+    { name: 'تحدي اليوم', done: !!(ch && ch.done), sub: ch && ch.page ? 'الوجه ' + ar(ch.page) : 'بعد أول حفظ' },
+  ];
+  const next = steps.findIndex((x) => !x.done);
+  const doneCount = steps.filter((x) => x.done).length;
+  box.innerHTML = `
+    <div class="home-h">تابع وردك <span>${ar(doneCount)} من ${ar(steps.length)}</span></div>
+    <div class="mini-line" style="--done:${(next < 0 ? 1 : Math.max(0, next - 0.5) / (steps.length - 1)) * 66.7}%">
+      ${steps.map((x, i) => `<div class="dp ${x.done ? 'past' : i === next ? 'next' : ''}"><i></i><b>${x.name}</b><span>${x.sub}</span></div>`).join('')}
+    </div>
+    ${next < 0 ? '<div class="home-p ok">اكتمل وردك اليوم، تقبّل الله.</div>' : `<button class="btn brand" data-home="hifz">أكمل: ${steps[next].name}</button>`}`;
 }
 
 /* ═══════════ الأذكار ═══════════ */
@@ -510,6 +561,8 @@ async function patch(p) {
 }
 
 main.addEventListener('click', async (e) => {
+  const home = e.target.closest('[data-home]');
+  if (home) return go(home.dataset.home);
   const el = e.target.closest('[data-action],[data-az],[data-surah],[data-count],[data-q],[data-go]');
   if (!el) return;
 
@@ -640,7 +693,7 @@ function tick() {
   const iqcd = document.getElementById('iqcd');
   if (iq && iqcd) iqcd.textContent = window.ZN.formatCountdown(iq.ts - Date.now());
   // بطاقة الشريط الجانبي
-  sideNext.innerHTML = `<div>الصلاة القادمة</div>
+  sideNext.innerHTML = `<div>القادمة</div>
     <div class="n">${esc(state.next.name)}</div>
     <div class="cd">${window.ZN.formatCountdown(ms)}</div>`;
 }
@@ -680,5 +733,6 @@ window.zn.onRoute((r) => go(r));
 
 (async () => {
   const p = await window.zn.getState();
+  surahs = await window.zn.surahs(); // لأسماء السور في الاختصارات
   apply(p, true);
 })();
